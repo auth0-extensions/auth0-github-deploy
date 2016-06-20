@@ -1,14 +1,14 @@
-import Express from 'express';
 import morgan from 'morgan';
+import Express from 'express';
+import auth0 from 'auth0-oauth2-express';
 import bodyParser from 'body-parser';
+
+import routes from './routes';
 import config from './lib/config';
 import logger from './lib/logger';
 import * as middlewares from './lib/middlewares';
 
-import auth0 from 'auth0-oauth2-express';
-import routes from './routes';
-
-module.exports = () => {
+module.exports = (storageContext) => {
   const app = new Express();
   app.use(morgan(':method :url :status :response-time ms - :res[content-length]', {
     stream: logger.stream
@@ -30,7 +30,7 @@ module.exports = () => {
   }));
 
   // Configure routes.
-  app.use('/', routes());
+  app.use('/', routes(storageContext));
 
   // Generic error handler.
   app.use(middlewares.errorHandler);
