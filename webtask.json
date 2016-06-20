@@ -1,0 +1,18 @@
+{
+  "title": "Auth0 GitHub Deployment",
+  "name": "auth0-github-deploy",
+  "version": "1.0.0",
+  "author": "auth0",
+  "description": "This extension gives Auth0 customers the possibility to deploy Rules and Custom Database Connections from GitHub.",
+  "type": "application",
+  "logoUrl": "https://cdn.auth0.com/extensions/auth0-github-deploy/assets/logo.svg",
+  "initialUrlPath": "/admins/login",
+  "repository": "https://github.com/auth0/auth0-github-deploy",
+  "keywords": [
+    "auth0",
+    "extension"
+  ],
+  "auth0": {
+    "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules"
+  }
+}
