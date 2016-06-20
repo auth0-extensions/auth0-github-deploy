@@ -22,13 +22,15 @@ module.exports = () => {
   }));
   app.use(bodyParser.urlencoded({ extended: false }));
 
-  // Configure routes.
-  app.use('/', routes());
-
   // Authentication.
-  app.use('/admins', auth0({
+  app.use('/', auth0({
+    clientName: 'GitHub Deployment',
+    scopes: 'profile',
     audience: `https://${config('AUTH0_DOMAIN')}/api/v2/`
   }));
+
+  // Configure routes.
+  app.use('/', routes());
 
   // Generic error handler.
   app.use(middlewares.errorHandler);

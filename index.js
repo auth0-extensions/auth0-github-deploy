@@ -17,7 +17,7 @@ nconf
   .defaults({
     NODE_ENV: 'development',
     HOSTING_ENV: 'default',
-    PORT: 3000
+    PORT: 3001
   });
 
 // Start the server.

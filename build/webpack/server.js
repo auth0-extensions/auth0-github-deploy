@@ -7,12 +7,12 @@ const logger = require('../../server/lib/logger');
 logger.info('Running development webpack server...');
 
 const options = {
-  publicPath: 'http://localhost:3001/app/',
+  publicPath: 'http://localhost:3000/app/',
   hot: true,
   inline: true,
   historyApiFallback: true,
   proxy: {
-    '*': 'http://localhost:3000'
+    '*': 'http://localhost:3001'
   },
 
   quiet: false,
@@ -27,12 +27,12 @@ const options = {
 };
 
 new WebpackDevServer(webpack(config), options)
-  .listen(3001, 'localhost',
+  .listen(3000, 'localhost',
     (err) => {
       if (err) {
         logger.error(err);
       } else {
-        logger.info('Development server listening on: http://localhost:3001');
+        logger.info('Development server listening on: http://localhost:3000');
 
         // Start the actual webserver.
         require('../../index');

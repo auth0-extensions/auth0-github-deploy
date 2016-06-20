@@ -2,7 +2,7 @@ import React from 'react';
 import { Router, Route, IndexRedirect } from 'react-router';
 
 import * as containers from './containers';
-import { RequireAuthentication } from './containers/RequireAuthentication';
+import RequireAuthentication from './containers/RequireAuthentication';
 
 export default (history) =>
   <Router history={history}>
