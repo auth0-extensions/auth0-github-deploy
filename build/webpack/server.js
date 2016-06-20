@@ -33,5 +33,8 @@ new WebpackDevServer(webpack(config), options)
         logger.error(err);
       } else {
         logger.info('Development server listening on: http://localhost:3001');
+
+        // Start the actual webserver.
+        require('../../index');
       }
     });

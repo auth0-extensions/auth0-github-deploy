@@ -2,33 +2,14 @@ import express from 'express';
 
 import config from '../lib/config';
 import logger from '../lib/logger';
-
 import * as auth0 from '../lib/auth0';
+
+import trackProgress from '../lib/trackProgress';
 import { pushToSlack } from '../lib/slack';
 import { getChanges } from '../lib/github';
 import { appendProgress } from '../lib/storage';
 import { githubWebhook } from '../lib/middlewares';
 import { getForClient } from '../lib/managementApiClient';
-
-const trackProgress = (id, branch, repository) => {
-  const logs = [];
-  return {
-    id,
-    branch,
-    repository,
-    date: new Date(),
-    connectionsUpdated: 0,
-    rulesCreated: 0,
-    rulesUpdated: 0,
-    rulesDeleted: 0,
-    error: null,
-    logs,
-    log: (message) => {
-      logs.push({ date: new Date(), message });
-      logger.debug(message);
-    }
-  };
-};
 
 export default (storageContext) => {
   const activeBranch = config('GITHUB_BRANCH');
@@ -38,19 +19,24 @@ export default (storageContext) => {
   webhooks.post('/deploy', githubWebhook(githubSecret), (req, res, next) => {
     const { id, branch, commits, repository } = req.webhook;
 
+    // Only accept push requests.
     if (req.webhook.event !== 'push') {
       return res.json({ message: `Request ignored, the '${req.webhook.event}' event is not supported.` });
     }
 
+    // Only for the active branch.
     if (branch !== activeBranch) {
       return res.json({ message: `Request ignored, '${branch}' is not the active branch.` });
     }
 
     const progress = trackProgress(id, branch, repository);
+
+    // Parse all commits.
     getChanges(repository, branch, commits)
       .then(context => {
         progress.log(`Webhook ${id} received: ${JSON.stringify(context, null, 2)}`);
 
+        // Send all changes to Auth0.
         return getForClient(config('AUTH0_DOMAIN'), config('AUTH0_CLIENT_ID'), config('AUTH0_CLIENT_SECRET'))
           .then((client) => {
             context.client = client;
@@ -62,23 +48,33 @@ export default (storageContext) => {
           })
           .then(() => auth0.updateRules(progress, context.client, context.rules.modified))
           .then(() => auth0.deleteRules(progress, context.client, context.rules.removed))
-          .then(() => auth0.updateDatabases(progress, context.client, context.databases));
+          .then(() => auth0.updateDatabases(progress, context.client, context.databases))
+          .then(() => progress.log('Done.'));
       })
       .then(() => appendProgress(storageContext, progress))
       .then(() => pushToSlack(progress))
       .then(() => {
-        progress.log('Done.');
         res.json({
-          connectionsUpdated: progress.connectionsUpdated,
-          rulesCreated: progress.connectionsUpdated,
-          rulesUpdated: progress.connectionsUpdated,
-          rulesDeleted: progress.connectionsUpdated
+          connections: {
+            updated: progress.connectionsUpdated
+          },
+          rules: {
+            created: progress.rulesCreated,
+            updated: progress.rulesUpdated,
+            deleted: progress.rulesDeleted
+          }
         });
       })
       .catch(err => {
+        // Log error and persist.
         progress.error = err;
         progress.log(`Error: ${err.message}`);
+        appendProgress(storageContext, progress);
+
+        // Final attempt to push to slack.
         pushToSlack(progress);
+
+        // Continue.
         next(err);
       });
   });

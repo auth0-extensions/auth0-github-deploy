@@ -1,9 +1,11 @@
 import Express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import config from './lib/config';
 import logger from './lib/logger';
 import * as middlewares from './lib/middlewares';
 
+import auth0 from 'auth0-oauth2-express';
 import routes from './routes';
 
 module.exports = () => {
@@ -22,6 +24,11 @@ module.exports = () => {
 
   // Configure routes.
   app.use('/', routes());
+
+  // Authentication.
+  app.use('/admins', auth0({
+    audience: `https://${config('AUTH0_DOMAIN')}/api/v2/`
+  }));
 
   // Generic error handler.
   app.use(middlewares.errorHandler);
