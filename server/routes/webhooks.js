@@ -34,7 +34,7 @@ export default (storageContext) => {
     // Parse all commits.
     getChanges(repository, branch, commits)
       .then(context => {
-        progress.log(`Webhook ${id} received: ${JSON.stringify(context, null, 2)}`);
+        progress.log(`Webhook received: ${JSON.stringify({ id, user, ...context }, null, 2)}`);
 
         // Send all changes to Auth0.
         return getForClient(config('AUTH0_DOMAIN'), config('AUTH0_CLIENT_ID'), config('AUTH0_CLIENT_SECRET'))

@@ -7,8 +7,6 @@ export default (id, branch, repository, user) => {
     logger.debug(message);
   };
 
-  log(`Deploying '${id}' triggered by ${user}`);
-
   return {
     id,
     user,
@@ -21,9 +19,6 @@ export default (id, branch, repository, user) => {
     rulesDeleted: 0,
     error: null,
     logs,
-    log: (message) => {
-      logs.push({ date: new Date(), message });
-      logger.debug(message);
-    }
+    log
   };
 };

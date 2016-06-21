@@ -15,3 +15,23 @@ export function fetchDeployments() {
     }
   };
 }
+/*
+ * Open a deployment.
+ */
+export function openDeployment(deployment) {
+  return {
+    type: constants.OPEN_DEPLOYMENT,
+    payload: {
+      deployment
+    }
+  };
+}
+
+/*
+ * Clear the current deployment.
+ */
+export function clearDeployment() {
+  return {
+    type: constants.CLEAR_DEPLOYMENT
+  };
+}

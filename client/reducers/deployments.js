@@ -7,11 +7,20 @@ import createReducer from '../utils/createReducer';
 const initialState = {
   loading: false,
   error: null,
-  records: []
+  records: [],
+  activeRecord: null
 };
 
 export const deployments = createReducer(fromJS(initialState), {
-  [constants.FETCH_DEPLOYMENTS_PENDING]: (state, action) =>
+  [constants.OPEN_DEPLOYMENT]: (state, action) =>
+    state.merge({
+      activeRecord: action.payload.deployment
+    }),
+  [constants.CLEAR_DEPLOYMENT]: (state) =>
+    state.merge({
+      activeRecord: null
+    }),
+  [constants.FETCH_DEPLOYMENTS_PENDING]: (state) =>
     state.merge({
       loading: true,
       records: [ ]
