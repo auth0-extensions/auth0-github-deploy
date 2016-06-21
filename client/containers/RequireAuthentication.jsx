@@ -14,6 +14,7 @@ export default function RequireAuthentication(InnerComponent) {
 
     requireAuthentication() {
       if (!this.props.auth.isAuthenticated && !this.props.auth.isAuthenticating) {
+        return;
         window.location.href = '/login';
       }
     }

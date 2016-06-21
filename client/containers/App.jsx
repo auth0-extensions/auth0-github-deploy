@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { logout } from '../actions/auth';
@@ -10,7 +10,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Header user={this.props.user} onLogout={this.props.logout} />
+        <Header issuer={this.props.issuer} user={this.props.user} onLogout={this.props.logout} />
         <div className="container">
           <div className="row">
             <Sidebar>
@@ -18,7 +18,7 @@ class App extends Component {
               <SidebarItem title="Deployments" route="/deployments" icon="icon icon-budicon-322" />
             </Sidebar>
             <div id="content" className="col-xs-10">
-              { this.props.children }
+            { this.props.children }
             </div>
           </div>
         </div>
@@ -29,7 +29,8 @@ class App extends Component {
 
 function select(state) {
   return {
-    user: state.auth.get('user')
+    user: state.auth.get('user'),
+    issuer: state.auth.get('issuer')
   };
 }
 

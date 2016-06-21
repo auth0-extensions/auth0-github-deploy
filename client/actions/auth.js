@@ -16,7 +16,7 @@ export function logout() {
 
 export function loadCredentials() {
   return (dispatch) => {
-    const apiToken = sessionStorage.getItem('apiToken');
+    const apiToken = sessionStorage.getItem('token');
     if (apiToken) {
       const decodedToken = jwtDecode(apiToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${apiToken}`;
@@ -32,6 +32,7 @@ export function loadCredentials() {
         type: constants.LOGIN_SUCCESS,
         payload: {
           apiToken,
+          decodedToken,
           user: decodedToken
         }
       });

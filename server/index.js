@@ -25,8 +25,7 @@ module.exports = (storageContext) => {
   // Authentication.
   app.use('/', auth0({
     clientName: 'GitHub Deployment',
-    scopes: 'profile',
-    audience: `https://${config('AUTH0_DOMAIN')}/api/v2/`
+    scopes: 'profile'
   }));
 
   // Configure routes.
