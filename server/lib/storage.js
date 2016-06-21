@@ -4,8 +4,12 @@ import Promise from 'bluebird';
 /*
  * Read from Webtask storage.
  */
-const readStorage = (storageContext) =>
-  new Promise((resolve, reject) => {
+export const readStorage = (storageContext) => {
+  if (!storageContext) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
     storageContext.get((err, webtaskData) => {
       if (err) {
         return reject(err);
@@ -15,11 +19,12 @@ const readStorage = (storageContext) =>
       return resolve({ data });
     });
   });
+};
 
 /*
  * Write to Webtask storage.
  */
-const writeStorage = (storageContext, data) =>
+export const writeStorage = (storageContext, data) =>
   new Promise((resolve, reject) => {
     storageContext.set(data, { force: 1 }, (err) => {
       if (err) {

@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import connectContainer from 'redux-static';
 
 import { deploymentActions } from '../actions';
@@ -18,8 +19,9 @@ export default connectContainer(class extends Component {
 
   static propTypes = {
     deployments: PropTypes.object.isRequired,
+    fetchDeployments: PropTypes.func.isRequired,
     openDeployment: PropTypes.func.isRequired,
-    fetchDeployments: PropTypes.func.isRequired
+    clearDeployment: PropTypes.func.isRequired
   }
 
   componentWillMount() {
@@ -32,6 +34,13 @@ export default connectContainer(class extends Component {
     return (
       <div>
         <div className="row">
+          <div className="col-xs-12">
+            <ButtonToolbar className="pull-right">
+              <Button bsSize="small" className="btn-primary" onClick={this.props.fetchDeployments}>
+                <i className="icon icon-budicon-257"></i> Reload
+              </Button>
+            </ButtonToolbar>
+          </div>
           <div className="col-xs-12">
             <Error message={error} />
             <DeploymentsTable error={error} records={records} showLogs={this.props.openDeployment} />
