@@ -14,7 +14,7 @@ export const deployments = createReducer(fromJS(initialState), {
   [constants.FETCH_DEPLOYMENTS_PENDING]: (state, action) =>
     state.merge({
       loading: true,
-      records: action.meta.page === 0 ? [] : state.get('records')
+      records: [ ]
     }),
   [constants.FETCH_DEPLOYMENTS_REJECTED]: (state, action) =>
     state.merge({

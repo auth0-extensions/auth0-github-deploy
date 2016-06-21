@@ -4,7 +4,7 @@ import { ArgumentError, UnauthorizedError } from '../errors';
 const calculateSignature = (key, blob) =>
   `sha1=${crypto.createHmac('sha1', key).update(blob).digest('hex')}`;
 
-const parse = (headers, { ref = '', commits = [], repository = {} }) => {
+const parse = (headers, { ref = '', commits = [], repository = {}, sender = {} }) => {
   const refParts = ref.split('/');
 
   return {
@@ -12,7 +12,8 @@ const parse = (headers, { ref = '', commits = [], repository = {} }) => {
     event: headers['x-github-event'],
     branch: refParts.length === 3 ? refParts[2] : '',
     commits,
-    repository: repository.full_name
+    repository: repository.full_name,
+    user: sender.login
   };
 };
 

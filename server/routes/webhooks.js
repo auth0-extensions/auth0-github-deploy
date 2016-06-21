@@ -17,7 +17,7 @@ export default (storageContext) => {
 
   const webhooks = express.Router();
   webhooks.post('/deploy', githubWebhook(githubSecret), (req, res, next) => {
-    const { id, branch, commits, repository } = req.webhook;
+    const { id, branch, commits, repository, user } = req.webhook;
 
     // Only accept push requests.
     if (req.webhook.event !== 'push') {
@@ -29,7 +29,7 @@ export default (storageContext) => {
       return res.json({ message: `Request ignored, '${branch}' is not the active branch.` });
     }
 
-    const progress = trackProgress(id, branch, repository);
+    const progress = trackProgress(id, branch, repository, user);
 
     // Parse all commits.
     getChanges(repository, branch, commits)
@@ -69,6 +69,7 @@ export default (storageContext) => {
         // Log error and persist.
         progress.error = err;
         progress.log(`Error: ${err.message}`);
+        progress.log(`StackTrace: ${err.stack}`);
         appendProgress(storageContext, progress);
 
         // Final attempt to push to slack.

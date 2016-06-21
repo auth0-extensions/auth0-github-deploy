@@ -17,7 +17,7 @@ export default connectContainer(class extends Component {
   }
 
   static propTypes = {
-    config: PropTypes.func.isRequired,
+    config: PropTypes.object.isRequired,
     fetchConfiguration: PropTypes.func.isRequired
   }
 
