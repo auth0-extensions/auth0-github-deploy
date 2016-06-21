@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 
 export default function RequireAuthentication(InnerComponent) {
   class RequireAuthenticationContainer extends React.Component {
@@ -28,5 +27,5 @@ export default function RequireAuthentication(InnerComponent) {
     }
   }
 
-  return connect((state) => ({ auth: state.auth.toJS() }), { push })(RequireAuthenticationContainer);
+  return connect((state) => ({ auth: state.auth.toJS() }), { })(RequireAuthenticationContainer);
 }

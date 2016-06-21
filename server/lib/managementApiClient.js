@@ -34,10 +34,9 @@ export const getAccessToken = Promise.promisify(
   }
 ));
 
-export const getForClient = (domain, clientId, clientSecret) => {
-  return getAccessToken(domain, clientId, clientSecret)
+export const getForClient = (domain, clientId, clientSecret) =>
+  getAccessToken(domain, clientId, clientSecret)
     .then(accessToken => new auth0.ManagementClient({ domain, token: accessToken }));
-};
 
 export const getForAccessToken = (domain, accessToken) =>
   Promise.resolve(new auth0.ManagementClient({ domain, token: accessToken }));

@@ -6,15 +6,14 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import rootReducer from '../reducers';
 import DevTools from '../containers/DevTools';
 
-export default function configureStore(middlewares, initialState = { }) {
+export default function configureStore() {
   const pipeline = [
     applyMiddleware(
       promiseMiddleware(),
       thunkMiddleware,
       createLogger({
         predicate: () => process.env.NODE_ENV !== 'production'
-      }),
-      ...middlewares
+      })
     )
   ];
 
@@ -23,7 +22,7 @@ export default function configureStore(middlewares, initialState = { }) {
   }
 
   const finalCreateStore = compose(...pipeline)(createStore);
-  const store = finalCreateStore(rootReducer, initialState);
+  const store = finalCreateStore(rootReducer, { });
 
   // Enable Webpack hot module replacement for reducers.
   if (process.env.NODE_ENV !== 'production' && module.hot) {

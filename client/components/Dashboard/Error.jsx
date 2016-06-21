@@ -13,7 +13,7 @@ class Error extends Component {
       return this.props.children || <div></div>;
     }
 
-    return <Alert bsStyle="danger" onDismiss={this.onDismiss.bind(this)} dismissAfter={this.props.dismissAfter || 10000}>
+    return <Alert bsStyle="danger" onDismiss={this.onDismiss.bind(this)}>
        <h4>Oh snap! You got an error!</h4>
        <p>{this.props.message}</p>
      </Alert>;
