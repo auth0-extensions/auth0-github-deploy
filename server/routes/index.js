@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import express from 'express';
 
 import html from './html';
@@ -24,7 +25,7 @@ export default (storageContext) => {
   });
   routes.get('/api/deployments', requireUser, (req, res, next) =>
     readStorage()
-      .then(data => res.json(data.deployments || []))
+      .then(data => res.json(_.sortByOrder(data.deployments || [], [ 'date' ], [ false ])))
       .catch(next)
   );
   return routes;

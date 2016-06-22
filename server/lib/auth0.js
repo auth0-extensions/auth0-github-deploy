@@ -39,7 +39,10 @@ export const updateDatabases = (progress, client, databases) =>
  */
 const getRules = (client) =>
   Promise.all(constants.RULES_STAGES.map(stage => client.rules.getAll({ stage })))
-    .then((...rules) => _.union(rules));
+    .then((...rules) => _.chain(rules)
+      .flattenDeep()
+      .union()
+      .value());
 
 /*
  * Delete a rule.
@@ -66,41 +69,38 @@ export const deleteRules = (progress, client, deletedRules) =>
  * Update a single rule.
  */
 const updateRule = (progress, client, rules, ruleName, ruleData) => {
+  progress.log(`Processing rule '${ruleName}'`);
+
   const rule = _.find(rules, { name: ruleName });
   if (!rule) {
-    const metadata = {
+    const payload = {
       order: 0,
       enabled: true,
       stage: 'login_success',
       ...ruleData.metadata,
-      name: ruleName
+      name: ruleName,
+      script: ruleData.script
     };
 
     progress.rulesCreated++;
-    progress.log(`Creating rule ${ruleName}: ${JSON.stringify(metadata, null, 2)}`);
+    progress.log(`Creating rule ${ruleName}: ${JSON.stringify(payload, null, 2)}`);
 
-    return client.rules.create({
-      ...metadata,
-      script: ruleData.script
-    });
+    return client.rules.create(payload);
   }
 
-  const metadata = {
+  const payload = {
     ...rule,
-    ...ruleData.metadata
+    ...ruleData.metadata,
+    script: ruleData.script || rule.script
   };
 
   // Remove properties that are not allowed during update.
-  delete metadata.id;
-  delete metadata.stage;
+  delete payload.id;
+  delete payload.stage;
 
   progress.rulesUpdated++;
-  progress.log(`Updating rule ${ruleName} (${rule.id}): ${JSON.stringify(metadata, null, 2)}`);
-
-  return client.rules.update({ id: rule.id }, {
-    ...metadata,
-    script: ruleData.script
-  });
+  progress.log(`Updating rule ${ruleName} (${rule.id}): ${JSON.stringify(payload, null, 2)}`);
+  return client.rules.update({ id: rule.id }, payload);
 };
 
 /*
@@ -108,4 +108,4 @@ const updateRule = (progress, client, rules, ruleName, ruleData) => {
  */
 export const updateRules = (progress, client, updatedRules) =>
   getRules(client)
-    .then(rules => Promise.map(Object.keys(updatedRules), (ruleName) => updateRule(progress, client, rules, ruleName, updatedRules[ruleName]), { concurrency: 2 }));
+    .then(rules => Promise.map(updatedRules, (rule) => updateRule(progress, client, rules, rule.name, rule), { concurrency: 2 }));

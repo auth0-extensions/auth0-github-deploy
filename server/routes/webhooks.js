@@ -30,11 +30,12 @@ export default (storageContext) => {
     }
 
     const progress = trackProgress(id, branch, repository, user);
+    progress.log(`Webhook received: ${id}. Downloading changes...`);
 
     // Parse all commits.
     return getChanges(repository, branch, commits)
       .then(context => {
-        progress.log(`Webhook received: ${JSON.stringify({ id, user, ...context }, null, 2)}`);
+        progress.log(`Changes: ${JSON.stringify({ id, user, ...context }, null, 2)}`);
         progress.log(`Getting access token for ${config('AUTH0_DOMAIN')}`);
 
         // Send all changes to Auth0.

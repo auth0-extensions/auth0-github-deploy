@@ -2,6 +2,8 @@ import _ from 'lodash';
 import path from 'path';
 import Promise from 'bluebird';
 import request from 'request-promise';
+
+import config from './config';
 import * as constants from './constants';
 
 /*
@@ -70,7 +72,8 @@ const getFiles = (commits) => ({
  * Download a single file.
  */
 const downloadFile = (repository, branch, fileName) => {
-  const url = `https://raw.githubusercontent.com/${repository}/${branch}/${fileName}`;
+  const token = config('GITHUB_TOKEN');
+  const url = `https://${token}:x-oauth-basic@raw.githubusercontent.com/${repository}/${branch}/${fileName}`;
 
   return request({ uri: url, json: false })
     .then(body => ({
