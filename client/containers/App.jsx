@@ -11,7 +11,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Header issuer={this.props.issuer} user={this.props.user} onLogout={this.props.logout} />
+        <Header tenant={window.config.AUTH0_DOMAIN} onLogout={this.props.logout} />
         <div className="container">
           <div className="row">
             <section className="content-page current">

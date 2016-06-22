@@ -3,13 +3,16 @@ import React, { Component } from 'react';
 
 export default class Header extends Component {
   static propTypes = {
-    user: React.PropTypes.object,
-    issuer: React.PropTypes.string,
+    tenant: React.PropTypes.string,
     onLogout: React.PropTypes.func.isRequired
   }
 
+  getPicture(tenant) {
+    return `https://cdn.auth0.com/avatars/${tenant.slice(0, 2).toLowerCase()}.png`;
+  }
+
   render() {
-    const { issuer, user, onLogout } = this.props;
+    const { tenant, onLogout } = this.props;
 
     return (
       <header className="dashboard-header">
@@ -32,8 +35,10 @@ export default class Header extends Component {
                 </li>
                 <li className="dropdown">
                   <span role="button" data-toggle="dropdown" data-target="#" className="btn-dro btn-username">
-                  <img src={user.get('picture')} className="picture avatar" />
-                  <span className="username-text">{issuer || user.get('nickname') || user.get('email')}</span><i className="icon-budicon-460"></i></span>
+                    <img src={this.getPicture(tenant)} className="picture avatar" />
+                    <span className="username-text">{tenant}</span>
+                    <i className="icon-budicon-460"></i>
+                  </span>
                   <ul role="menu" aria-labelledby="dLabel" className="dropdown-menu animated">
                     <li role="presentation">
                       <a role="menuitem" tabIndex="-1" onClick={onLogout}>Logout</a>
