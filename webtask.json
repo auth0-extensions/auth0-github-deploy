@@ -22,6 +22,7 @@
     },
     "GITHUB_BRANCH": {
       "description": "The branch we should monitor for commits",
+      "default": "master",
       "required": true
     },
     "GITHUB_TOKEN": {
