@@ -55,6 +55,8 @@ const deleteRule = (progress, client, rules, ruleName) => {
     return client.rules.delete({ id: rule.id });
   }
 
+  progress.log(`Couldn't delete '${ruleName}' - Rule does not exist.`);
+
   return null;
 };
 

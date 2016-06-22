@@ -53,20 +53,25 @@ const validFilesOnly = (fileName) => {
 /*
  * Get a flat list of changes and files that need to be added/updated/removed.
  */
-const getFiles = (commits) => ({
-  modified: _.chain(commits)
+const getFiles = (commits) => {
+  const modified = _.chain(commits)
     .map(commit => _.union(commit.added, commit.modified))
     .flattenDeep()
     .uniq()
     .filter(validFilesOnly)
-    .value(),
-  removed: _.chain(commits)
+    .value();
+  const removed = _.chain(commits)
     .map(commit => commit.removed)
     .flattenDeep()
     .uniq()
     .filter(validFilesOnly)
-    .value()
-});
+    .without(...modified)
+    .value();
+  return {
+    modified,
+    removed
+  };
+};
 
 /*
  * Download a single file.
