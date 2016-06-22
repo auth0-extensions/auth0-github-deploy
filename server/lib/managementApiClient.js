@@ -24,7 +24,7 @@ export const getAccessToken = Promise.promisify(
         json: true
       };
 
-      request.post(options)
+      return request.post(options)
         .then((data) => callback(null, data.access_token))
         .catch((err) => callback(err));
     },

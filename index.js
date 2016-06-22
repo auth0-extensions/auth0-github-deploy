@@ -17,7 +17,8 @@ nconf
   .defaults({
     NODE_ENV: 'development',
     HOSTING_ENV: 'default',
-    PORT: 3001
+    PORT: 3001,
+    WT_URL: 'http://localhost:3000'
   });
 
 // Start the server.

@@ -3,18 +3,20 @@ import request from 'request-promise';
 
 import config from './config';
 
-const createPayload = (progress) => {
+const createPayload = (progress, extensionUrl) => {
   const msg = {
     username: 'auth0-deployments',
     icon_emoji: ':rocket:',
     attachments: []
   };
 
+  const details = `(<${extensionUrl}|Details>)`;
+
   if (progress.error) {
     msg.attachments.push({
       color: '#F35A00',
       fallback: `GitHub to Auth0 Deployment failed: ${progress.error.message}`,
-      text: 'GitHub to Deployment failed',
+      text: `GitHub to Auth0 Deployment failed ${details}`,
       fields: [
         { title: 'Repository', value: progress.repository, short: true },
         { title: 'Branch', value: progress.branch, short: true },
@@ -45,7 +47,7 @@ const createPayload = (progress) => {
     msg.attachments.push({
       color: '#7CD197',
       fallback: 'GitHub to Auth0 Deployment',
-      text: 'GitHub to Auth0 Deployment',
+      text: `GitHub to Auth0 Deployment ${details}`,
       fields
     });
   }
@@ -53,13 +55,13 @@ const createPayload = (progress) => {
   return msg;
 };
 
-export const pushToSlack = (progress) => {
+export const pushToSlack = (progress, extensionUrl) => {
   if (!config('SLACK_INCOMING_WEBHOOK_URL')) {
     return Promise.resolve();
   }
 
   progress.log('Sending progress to Slack.');
 
-  const msg = createPayload(progress);
+  const msg = createPayload(progress, extensionUrl);
   return request({ uri: config('SLACK_INCOMING_WEBHOOK_URL'), method: 'POST', form: { payload: JSON.stringify(msg) } });
 };

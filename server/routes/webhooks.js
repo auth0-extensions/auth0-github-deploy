@@ -1,3 +1,4 @@
+import url from 'url';
 import express from 'express';
 
 import config from '../lib/config';
@@ -54,7 +55,7 @@ export default (storageContext) => {
           .then(() => progress.log('Done.'));
       })
       .then(() => appendProgress(storageContext, progress))
-      .then(() => pushToSlack(progress))
+      .then(() => pushToSlack(progress, `${config('WT_URL')}/login`))
       .then(() => {
         res.json({
           connections: {
@@ -75,7 +76,7 @@ export default (storageContext) => {
         appendProgress(storageContext, progress);
 
         // Final attempt to push to slack.
-        pushToSlack(progress);
+        pushToSlack(progress, `${config('WT_URL')}/login`);
 
         // Continue.
         next(err);
