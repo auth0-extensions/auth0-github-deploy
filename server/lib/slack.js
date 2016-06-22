@@ -2,7 +2,6 @@ import Promise from 'bluebird';
 import request from 'request-promise';
 
 import config from './config';
-import logger from './logger';
 
 const createPayload = (progress) => {
   const msg = {
@@ -59,9 +58,8 @@ export const pushToSlack = (progress) => {
     return Promise.resolve();
   }
 
-  logger.debug('Sending progress to Slack.');
-    const msg = createPayload(progress);
-  console.log(config('SLACK_INCOMING_WEBHOOK_URL'), JSON.stringify(msg));
+  progress.log('Sending progress to Slack.');
 
+  const msg = createPayload(progress);
   return request({ uri: config('SLACK_INCOMING_WEBHOOK_URL'), method: 'POST', form: { payload: JSON.stringify(msg) } });
 };

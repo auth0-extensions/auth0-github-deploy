@@ -2,7 +2,8 @@ import fs from 'fs';
 import url from 'url';
 import ejs from 'ejs';
 import path from 'path';
-import nconf from 'nconf';
+
+import config from '../lib/config';
 
 export default () => {
   const template = `
@@ -36,17 +37,11 @@ export default () => {
   </html>
   `;
 
-  return (req, res, next) => {
-    if (req.url.indexOf('/api') === 0) {
-      return next();
-    }
-
-    const config = {
-      AUTH0_DOMAIN: nconf.get('AUTH0_DOMAIN'),
-      AUTH0_CLIENT_ID: nconf.get('AUTH0_CLIENT_ID'),
-      IS_ADMIN: req.path === '/admins',
+  return (req, res) => {
+    const settings = {
+      AUTH0_DOMAIN: config('AUTH0_DOMAIN'),
       BASE_URL: url.format({
-        protocol: nconf.get('NODE_ENV') !== 'production' ? 'http' : 'https',
+        protocol: config('NODE_ENV') !== 'production' ? 'http' : 'https',
         host: req.get('host'),
         pathname: url.parse(req.originalUrl || '').pathname.replace(req.path, '')
       }),
@@ -54,10 +49,10 @@ export default () => {
     };
 
     // Render from CDN.
-    const clientVersion = nconf.get('CLIENT_VERSION');
+    const clientVersion = config('CLIENT_VERSION');
     if (clientVersion) {
       return res.send(ejs.render(template, {
-        config,
+        config: settings,
         assets: { version: clientVersion }
       }));
     }
@@ -65,7 +60,7 @@ export default () => {
     // Render locally.
     return fs.readFile(path.join(__dirname, '../../dist/manifest.json'), 'utf8', (err, data) => {
       const locals = {
-        config,
+        config: settings,
         assets: {
           app: 'bundle.js'
         }

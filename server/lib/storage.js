@@ -1,12 +1,14 @@
 import _ from 'lodash';
 import Promise from 'bluebird';
 
+const defaultStorage = { };
+
 /*
  * Read from Webtask storage.
  */
 export const readStorage = (storageContext) => {
   if (!storageContext) {
-    return Promise.resolve();
+    return Promise.resolve(defaultStorage);
   }
 
   return new Promise((resolve, reject) => {
@@ -15,7 +17,7 @@ export const readStorage = (storageContext) => {
         return reject(err);
       }
 
-      const data = webtaskData || { };
+      const data = webtaskData || defaultStorage;
       return resolve({ data });
     });
   });
@@ -24,8 +26,12 @@ export const readStorage = (storageContext) => {
 /*
  * Write to Webtask storage.
  */
-export const writeStorage = (storageContext, data) =>
-  new Promise((resolve, reject) => {
+export const writeStorage = (storageContext, data) => {
+  if (!storageContext) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
     storageContext.set(data, { force: 1 }, (err) => {
       if (err) {
         return reject(err);
@@ -34,16 +40,13 @@ export const writeStorage = (storageContext, data) =>
       return resolve();
     });
   });
+};
 
 /*
  * Append progress to deployments.
  */
-export const appendProgress = (storageContext, progress) => {
-  if (!storageContext) {
-    return Promise.resolve();
-  }
-
-  return readStorage.then(data => {
+export const appendProgress = (storageContext, progress) =>
+  readStorage(storageContext).then(data => {
     data.deployments = data.deployments || [ ];
     data.deployments.push(progress);
     if (data.deployments.length > 10) {
@@ -52,4 +55,3 @@ export const appendProgress = (storageContext, progress) => {
     return data;
   })
   .then(data => writeStorage(storageContext, data));
-};

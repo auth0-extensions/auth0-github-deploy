@@ -29,7 +29,7 @@ export const updateDatabases = (progress, client, databases) =>
   Promise.map(databases,
     (database) => {
       progress.connectionsUpdated++;
-      progress.log(`Updating database ${database.id}: ${JSON.stringify(database.options)}`);
+      progress.log(`Updating database ${database.id}: ${JSON.stringify(database.options, null, 2)}`);
       return client.connections.update({ id: database.id }, { options: database.options });
     },
     { concurrency: 2 });

@@ -22,12 +22,6 @@ module.exports = (storageContext) => {
   }));
   app.use(bodyParser.urlencoded({ extended: false }));
 
-  // Authentication.
-  app.use('/', auth0({
-    clientName: 'GitHub Deployment',
-    scopes: 'profile'
-  }));
-
   // Configure routes.
   app.use('/', routes(storageContext));
 
