@@ -74,7 +74,6 @@ const updateRule = (progress, client, rules, ruleName, ruleData) => {
   const rule = _.find(rules, { name: ruleName });
   if (!rule) {
     const payload = {
-      order: 0,
       enabled: true,
       stage: 'login_success',
       ...ruleData.metadata,
