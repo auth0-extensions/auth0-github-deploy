@@ -24,3 +24,9 @@ Finally you can login to the extension using your Auth0 dashboard account:
 ```
 https://YOU.ngrok.io/login
 ```
+
+### Deployment
+
+```
+npm run build
+```
