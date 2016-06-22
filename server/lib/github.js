@@ -79,8 +79,6 @@ const getFiles = (commits) => {
       .filter(validFilesOnly)
       .value();
     const removedFiles = _.chain(commit.removed)
-      .flattenDeep()
-      .uniq()
       .filter(validFilesOnly)
       .without(...changedFiles)
       .value();
