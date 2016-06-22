@@ -21,15 +21,12 @@ module.exports = {
       'react',
       'react-bootstrap',
       'react-dom',
-      'react-loader-advanced',
-      'react-router',
       'react-redux',
       'redux',
       'redux-form',
       'redux-thunk',
       'redux-logger',
-      'redux-promise-middleware',
-      'redux-simple-router'
+      'redux-promise-middleware'
     ]
   },
 

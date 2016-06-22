@@ -1,10 +1,9 @@
+import path from 'path';
 import morgan from 'morgan';
 import Express from 'express';
-import auth0 from 'auth0-oauth2-express';
 import bodyParser from 'body-parser';
 
 import routes from './routes';
-import config from './lib/config';
 import logger from './lib/logger';
 import * as middlewares from './lib/middlewares';
 
@@ -23,6 +22,7 @@ module.exports = (storageContext) => {
   app.use(bodyParser.urlencoded({ extended: false }));
 
   // Configure routes.
+  app.use('/app', Express.static(path.join(__dirname, '../dist')));
   app.use('/', routes(storageContext));
 
   // Generic error handler.

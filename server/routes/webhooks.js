@@ -1,4 +1,3 @@
-import url from 'url';
 import express from 'express';
 
 import config from '../lib/config';
