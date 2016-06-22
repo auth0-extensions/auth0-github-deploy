@@ -51,22 +51,44 @@ const validFilesOnly = (fileName) => {
 };
 
 /*
+ * Append file to the assets to process.
+ */
+const appendFile = (file, appendTo = [], removeFrom = []) => {
+  if (appendTo.indexOf(file) === -1) {
+    appendTo.push(file);
+  }
+
+  const removedIndex = removeFrom.indexOf(file);
+  if (removedIndex > -1) {
+    removeFrom.splice(removedIndex, 1);
+  }
+};
+
+/*
  * Get a flat list of changes and files that need to be added/updated/removed.
  */
 const getFiles = (commits) => {
-  const modified = _.chain(commits)
-    .map(commit => _.union(commit.added, commit.modified))
-    .flattenDeep()
-    .uniq()
-    .filter(validFilesOnly)
-    .value();
-  const removed = _.chain(commits)
-    .map(commit => commit.removed)
-    .flattenDeep()
-    .uniq()
-    .filter(validFilesOnly)
-    .without(...modified)
-    .value();
+  const modified = [];
+  const removed = [];
+
+  commits.forEach(commit => {
+    const changedFiles = _.chain()
+      .union([ commit.added, commit.modified ])
+      .flattenDeep()
+      .uniq()
+      .filter(validFilesOnly)
+      .value();
+    const removedFiles = _.chain(commit.removed)
+      .flattenDeep()
+      .uniq()
+      .filter(validFilesOnly)
+      .without(...changedFiles)
+      .value();
+
+    changedFiles.forEach(file => appendFile(file, modified, removed));
+    removedFiles.forEach(file => appendFile(file, removed, modified));
+  });
+
   return {
     modified,
     removed
