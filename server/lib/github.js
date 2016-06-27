@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import path from 'path';
 import Promise from 'bluebird';
+import GitHubApi from 'github';
 import request from 'request-promise';
 
 import config from './config';
@@ -51,47 +52,50 @@ const validFilesOnly = (fileName) => {
 };
 
 /*
- * Append file to the assets to process.
- */
-const appendFile = (file, appendTo = [], removeFrom = []) => {
-  if (appendTo.indexOf(file) === -1) {
-    appendTo.push(file);
-  }
-
-  const removedIndex = removeFrom.indexOf(file);
-  if (removedIndex > -1) {
-    removeFrom.splice(removedIndex, 1);
-  }
-};
-
-/*
  * Get a flat list of changes and files that need to be added/updated/removed.
  */
-const getFiles = (commits) => {
-  const modified = [];
-  const removed = [];
+export const hasChanges = (commits) =>
+  _.chain(commits)
+    .map(commit => _.union(commit.added, commit.modified))
+    .flattenDeep()
+    .uniq()
+    .filter(validFilesOnly)
+    .value()
+    .length > 0;
 
-  commits.forEach(commit => {
-    const changedFiles = _.chain()
-      .union([ commit.added, commit.modified ])
-      .flattenDeep()
-      .uniq()
-      .filter(validFilesOnly)
-      .value();
-    const removedFiles = _.chain(commit.removed)
-      .filter(validFilesOnly)
-      .without(...changedFiles)
-      .value();
+/*
+ * Get tree.
+ */
+const getTree = (repository, branch) =>
+  new Promise((resolve, reject) => {
+    try {
+      const github = new GitHubApi();
+      github.authenticate({
+        type: 'oauth',
+        token: config('GITHUB_TOKEN')
+      });
 
-    changedFiles.forEach(file => appendFile(file, modified, removed));
-    removedFiles.forEach(file => appendFile(file, removed, modified));
+      const [ user, repo ] = repository.split('/');
+      github.gitdata.getTree({ user, repo, sha: branch, recursive: true },
+        (err, res) => {
+          if (err) {
+            return reject(err);
+          }
+
+          try {
+            const files = res.tree
+              .filter(f => f.type === 'blob')
+              .map(f => f.path)
+              .filter(validFilesOnly);
+            return resolve(files);
+          } catch (mappingError) {
+            return reject(mappingError);
+          }
+        });
+    } catch (e) {
+      reject(e);
+    }
   });
-
-  return {
-    modified,
-    removed
-  };
-};
 
 /*
  * Download a single file.
@@ -162,27 +166,6 @@ const getRules = (repository, branch, files) => {
 };
 
 /*
- * Get the list of rules that should be removed.
- */
-const getRemovedRules = (files) => {
-  // Rules object.
-  const rules = [ ];
-
-  // Determine if we have the script, the metadata or both.
-  _.filter(files, isRule).forEach(fileName => {
-    const ruleName = path.parse(fileName).name;
-    rules[ruleName] = rules[ruleName] || { };
-
-    if (/\.js$/i.test(fileName)) {
-      rules.push(ruleName);
-    }
-  });
-
-  // Return all rules to be deleted.
-  return rules;
-};
-
-/*
  * Download a single database script.
  */
 const downloadDatabaseScript = (repository, branch, databaseName, scripts) => {
@@ -225,75 +208,19 @@ const getDatabaseScripts = (repository, branch, files) => {
 };
 
 /*
- * Get the list of database scripts that should be removed.
- */
-const getRemovedDatabaseScripts = (files) => {
-  const databases = [ ];
-
-  // Determine if we have the script, the metadata or both.
-  _.filter(files, isDatabaseConnection).forEach(fileName => {
-    const script = getDatabaseScriptDetails(fileName);
-    if (script) {
-      databases.push({
-        name: script.database,
-        scripts: [
-          { stage: script.name }
-        ]
-      });
-    }
-  });
-
-  // Return all rules to be deleted.
-  return databases;
-};
-
-/*
- * Generate a custom scripts object compatible with the management API.
- */
-const getCustomScripts = (modified, removed) => {
-  const databases = { };
-
-  // Add each modified script.
-  modified.forEach(database => {
-    databases[database.name] = databases[database.name] || { };
-    databases[database.name].customScripts = databases[database.name].customScripts || { };
-
-    database.scripts.forEach(script => {
-      databases[database.name].customScripts[script.stage] = script.contents;
-    });
-  });
-
-  // Add each removed script.
-  removed.forEach(database => {
-    databases[database.name] = databases[database.name] || { };
-    databases[database.name].customScripts = databases[database.name].customScripts || { };
-
-    database.scripts.forEach(script => {
-      databases[database.name].customScripts[script.stage] = null;
-    });
-  });
-
-  return databases;
-};
-
-/*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export const getChanges = (repository, branch, commits) => {
-  const { modified, removed } = getFiles(commits);
-  const promises = {
-    rulesModified: getRules(repository, branch, modified),
-    rulesRemoved: getRemovedRules(removed),
-    databasesModified: getDatabaseScripts(repository, branch, modified),
-    databasesRemoved: getRemovedDatabaseScripts(removed)
-  };
+export const getChanges = (repository, branch) =>
+  getTree(repository, branch)
+    .then(files => {
+      const promises = {
+        rules: getRules(repository, branch, files),
+        databases: getDatabaseScripts(repository, branch, files)
+      };
 
-  return Promise.props(promises)
-    .then((result) => ({
-      rules: {
-        modified: result.rulesModified,
-        removed: result.rulesRemoved
-      },
-      databases: getCustomScripts(result.databasesModified, result.databasesRemoved)
-    }));
-};
+      return Promise.props(promises)
+        .then((result) => ({
+          rules: result.rules,
+          databases: result.databases
+        }));
+    });

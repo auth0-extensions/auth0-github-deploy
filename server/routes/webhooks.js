@@ -6,7 +6,7 @@ import * as auth0 from '../lib/auth0';
 
 import trackProgress from '../lib/trackProgress';
 import { pushToSlack } from '../lib/slack';
-import { getChanges } from '../lib/github';
+import { hasChanges, getChanges } from '../lib/github';
 import { appendProgress } from '../lib/storage';
 import { githubWebhook } from '../lib/middlewares';
 import { getForClient } from '../lib/managementApiClient';
@@ -29,11 +29,16 @@ export default (storageContext) => {
       return res.json({ message: `Request ignored, '${branch}' is not the active branch.` });
     }
 
+    // Only run if there really are changes.
+    if (!hasChanges(commits)) {
+      return res.json({ message: 'Request ignored, none of the Rules or Database Connection scripts were changed.' });
+    }
+
     const progress = trackProgress(id, branch, repository, user);
     progress.log(`Webhook received: ${id}. Downloading changes...`);
 
     // Parse all commits.
-    return getChanges(repository, branch, commits)
+    return getChanges(repository, branch)
       .then(context => {
         progress.log(`Changes: ${JSON.stringify({ id, user, ...context }, null, 2)}`);
         progress.log(`Getting access token for ${config('AUTH0_DOMAIN')}`);
@@ -43,14 +48,9 @@ export default (storageContext) => {
           .then((client) => {
             context.client = client;
           })
-          .then(() => auth0.mergeDatabaseConnectionScripts(context.client, context.databases))
-          .then((databases) => {
-            logger.debug(`Database connections: ${JSON.stringify(databases, null, 2)}`);
-            context.databases = databases;
-          })
-          .then(() => auth0.updateRules(progress, context.client, context.rules.modified))
-          .then(() => auth0.deleteRules(progress, context.client, context.rules.removed))
           .then(() => auth0.updateDatabases(progress, context.client, context.databases))
+          .then(() => auth0.deleteRules(progress, context.client, context.rules))
+          .then(() => auth0.updateRules(progress, context.client, context.rules))
           .then(() => progress.log('Done.'));
       })
       .then(() => appendProgress(storageContext, progress))

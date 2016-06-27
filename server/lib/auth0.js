@@ -3,36 +3,58 @@ import Promise from 'bluebird';
 import * as constants from './constants';
 
 /*
- * Load the connections from Auth0 and merge any changes that have been made to custom scripts.
+ * Get database connections.
  */
-export const mergeDatabaseConnectionScripts = (client, databases) =>
-  client.connections.getAll({ strategy: 'auth0' })
-    .then(connections => Object.keys(databases).map(databaseName => {
-      const connection = _.find(connections, { name: databaseName });
-      if (!connection) {
-        throw new Error(`Unable to find connection named: '${databaseName}'`);
-      }
+const getDatabaseConnections = (client, databases) => {
+  const databaseNames = databases.map(d => d.name);
+  return client.connections.getAll({ strategy: 'auth0' })
+    .then(connections => connections.filter(c => databaseNames.indexOf(c.name) > -1));
+};
 
-      connection.options = connection.options || { };
-      connection.options.customScripts = {
-        ...connection.options.customScripts,
-        ...databases[databaseName].customScripts
-      };
+/*
+ * Update a database.
+ */
+const updateDatabase = (progress, client, connections, database) => {
+  progress.log(`Processing connection '${database.name}'`);
 
-      return connection;
-    }));
+  const connection = _.find(connections, { name: database.name });
+  if (!connection) {
+    throw new Error(`Unable to find connection named: '${database.name}'`);
+  }
+
+  const options = connection.options || { };
+  options.customScripts = { };
+
+  // Reset all scripts.
+  constants.DATABASE_SCRIPTS.forEach(script => {
+    options.customScripts[script] = null;
+  });
+
+  // Set all custom scripts from GitHub.
+  database.scripts.forEach((script) => {
+    options.customScripts[script.stage] = script.contents;
+  });
+
+  progress.connectionsUpdated++;
+  progress.log(`Updating database ${connection.id}: ${JSON.stringify(options, null, 2)}`);
+  return client.connections.update({ id: connection.id }, { options });
+};
 
 /*
  * Update all databases.
  */
-export const updateDatabases = (progress, client, databases) =>
-  Promise.map(databases,
-    (database) => {
-      progress.connectionsUpdated++;
-      progress.log(`Updating database ${database.id}: ${JSON.stringify(database.options, null, 2)}`);
-      return client.connections.update({ id: database.id }, { options: database.options });
-    },
-    { concurrency: 2 });
+export const updateDatabases = (progress, client, databases) => {
+  if (databases.length === 0) {
+    return Promise.resolve(true);
+  }
+
+  return getDatabaseConnections(client, databases)
+    .then(connections =>
+      Promise.map(databases,
+        (database) => updateDatabase(progress, client, connections, database),
+        { concurrency: 2 })
+    );
+};
 
 /*
  * Get all rules in all stages.
@@ -47,15 +69,13 @@ const getRules = (client) =>
 /*
  * Delete a rule.
  */
-const deleteRule = (progress, client, rules, ruleName) => {
-  const rule = _.find(rules, { name: ruleName });
-  if (rule) {
+const deleteRule = (progress, client, rules, existingRule) => {
+  const rule = _.find(rules, { name: existingRule.name });
+  if (!rule) {
     progress.rulesDeleted++;
-    progress.log(`Deleting rule ${ruleName} (${rule.id})`);
-    return client.rules.delete({ id: rule.id });
+    progress.log(`Deleting rule ${existingRule.name} (${existingRule.id})`);
+    return client.rules.delete({ id: existingRule.id });
   }
-
-  progress.log(`Couldn't delete '${ruleName}' - Rule does not exist.`);
 
   return null;
 };
@@ -63,17 +83,27 @@ const deleteRule = (progress, client, rules, ruleName) => {
 /*
  * Delete all rules.
  */
-export const deleteRules = (progress, client, deletedRules) =>
-  getRules(client)
-    .then(rules => Promise.map(deletedRules, (ruleName) => deleteRule(progress, client, rules, ruleName), { concurrency: 2 }));
+export const deleteRules = (progress, client, rules) => {
+  if (rules.length === 0) {
+    return Promise.resolve(true);
+  }
+
+  progress.log('Deleting rules...');
+
+  return getRules(client)
+    .then(existingRules => {
+      progress.log(`Existing rules: ${JSON.stringify(existingRules.map(rule => ({ id: rule.id, name: rule.name, stage: rule.stage, order: rule.order })), null, 2)}`);
+      return Promise.map(existingRules, (rule) => deleteRule(progress, client, rules, rule), { concurrency: 2 });
+    });
+};
 
 /*
  * Update a single rule.
  */
-const updateRule = (progress, client, rules, ruleName, ruleData) => {
+const updateRule = (progress, client, existingRules, ruleName, ruleData) => {
   progress.log(`Processing rule '${ruleName}'`);
 
-  const rule = _.find(rules, { name: ruleName });
+  const rule = _.find(existingRules, { name: ruleName });
   if (!rule) {
     const payload = {
       enabled: true,
@@ -90,15 +120,14 @@ const updateRule = (progress, client, rules, ruleName, ruleData) => {
   }
 
   const payload = {
-    ...rule,
     ...ruleData.metadata,
     script: ruleData.script || rule.script
   };
 
   // Remove properties that are not allowed during update.
-  delete payload.id;
   delete payload.stage;
 
+  // Update the rule.
   progress.rulesUpdated++;
   progress.log(`Updating rule ${ruleName} (${rule.id}): ${JSON.stringify(payload, null, 2)}`);
   return client.rules.update({ id: rule.id }, payload);
@@ -107,6 +136,16 @@ const updateRule = (progress, client, rules, ruleName, ruleData) => {
 /*
  * Update all rules.
  */
-export const updateRules = (progress, client, updatedRules) =>
-  getRules(client)
-    .then(rules => Promise.map(updatedRules, (rule) => updateRule(progress, client, rules, rule.name, rule), { concurrency: 2 }));
+export const updateRules = (progress, client, rules) => {
+  if (rules.length === 0) {
+    return Promise.resolve(true);
+  }
+
+  progress.log('Updating rules...');
+
+  return getRules(client)
+    .then(existingRules => {
+      progress.log(`Existing rules: ${JSON.stringify(existingRules.map(rule => ({ id: rule.id, name: rule.name, stage: rule.stage, order: rule.order })), null, 2)}`);
+      return Promise.map(rules, (rule) => updateRule(progress, client, existingRules, rule.name, rule), { concurrency: 2 });
+    });
+};
