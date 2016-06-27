@@ -66,7 +66,7 @@ export const hasChanges = (commits) =>
 /*
  * Get tree.
  */
-const getTree = (repository, branch) =>
+const getTree = (repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
       const github = new GitHubApi();
@@ -76,7 +76,7 @@ const getTree = (repository, branch) =>
       });
 
       const [ user, repo ] = repository.split('/');
-      github.gitdata.getTree({ user, repo, sha: branch, recursive: true },
+      github.gitdata.getTree({ user, repo, sha: sha || branch, recursive: true },
         (err, res) => {
           if (err) {
             return reject(err);
@@ -210,8 +210,8 @@ const getDatabaseScripts = (repository, branch, files) => {
 /*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
-export const getChanges = (repository, branch) =>
-  getTree(repository, branch)
+export const getChanges = (repository, branch, sha) =>
+  getTree(repository, branch, sha)
     .then(files => {
       const promises = {
         rules: getRules(repository, branch, files),

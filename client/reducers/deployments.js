@@ -28,7 +28,7 @@ export const deployments = createReducer(fromJS(initialState), {
   [constants.FETCH_DEPLOYMENTS_REJECTED]: (state, action) =>
     state.merge({
       loading: false,
-      error: `An error occured while loading the deployments: ${action.errorMessage}`
+      error: `An error occured while loading the deployments: ${action.payload.data && action.payload.data.message || action.payload.statusText}`
     }),
   [constants.FETCH_DEPLOYMENTS_FULFILLED]: (state, action) => {
     const { data } = action.payload;
@@ -38,6 +38,21 @@ export const deployments = createReducer(fromJS(initialState), {
         deployment.date_relative = moment(deployment.date).fromNow();
         return deployment;
       })))
+    })
+  },
+  [constants.RUN_DEPLOYMENT_PENDING]: (state) =>
+    state.merge({
+      loading: true,
+      error: null
+    }),
+  [constants.RUN_DEPLOYMENT_REJECTED]: (state, action) =>
+    state.merge({
+      loading: false,
+      error: `An error occured while loading the deployments: ${action.payload.data && action.payload.data.message || action.payload.statusText}`
+    }),
+  [constants.RUN_DEPLOYMENT_FULFILLED]: (state, action) => {
+    return state.merge({
+      loading: false
     });
   }
 });

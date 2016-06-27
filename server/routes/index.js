@@ -6,8 +6,9 @@ import meta from './meta';
 import webhooks from './webhooks';
 
 import config from '../lib/config';
-import { dashboardAdmins, requireUser } from '../lib/middlewares';
+import deploy from '../lib/deploy';
 import { readStorage } from '../lib/storage';
+import { dashboardAdmins, requireUser } from '../lib/middlewares';
 
 export default (storageContext) => {
   const routes = express.Router();
@@ -28,5 +29,21 @@ export default (storageContext) => {
       .then(data => res.json(_.sortByOrder(data.deployments || [], [ 'date' ], [ false ])))
       .catch(next)
   );
+  routes.post('/api/deployments', requireUser, (req, res, next) => {
+    deploy(storageContext, 'manual', config('GITHUB_BRANCH'), config('GITHUB_REPOSITORY'), (req.body && req.body.sha) || config('GITHUB_BRANCH'), req.user.sub)
+      .then(stats => {
+        res.json({
+          connections: {
+            updated: stats.connectionsUpdated
+          },
+          rules: {
+            created: stats.rulesCreated,
+            updated: stats.rulesUpdated,
+            deleted: stats.rulesDeleted
+          }
+        });
+      })
+      .catch(next);
+  });
   return routes;
 };

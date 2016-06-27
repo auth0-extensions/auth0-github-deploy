@@ -15,6 +15,7 @@ export function fetchDeployments() {
     }
   };
 }
+
 /*
  * Open a deployment.
  */
@@ -33,5 +34,22 @@ export function openDeployment(deployment) {
 export function clearDeployment() {
   return {
     type: constants.CLEAR_DEPLOYMENT
+  };
+}
+
+/*
+ * Run a deployment
+ */
+export function runDeployment(sha) {
+  return {
+    type: constants.RUN_DEPLOYMENT,
+    payload: {
+      promise: axios({
+        method: 'post',
+        url: '/api/deployments',
+        data: { sha },
+        responseType: 'json'
+      })
+    }
   };
 }

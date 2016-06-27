@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { ButtonToolbar } from 'react-bootstrap';
-import { Error, Table, TableAction, TableCell, TableBody, TableIconCell, TableTextCell, TableHeader, TableColumn, TableRow } from './Dashboard';
+import { Table, TableAction, TableCell, TableBody, TableIconCell, TableTextCell, TableHeader, TableColumn, TableRow } from './Dashboard';
 
 export default class DeploymentsTable extends Component {
   static propTypes = {
+    deployChange: React.PropTypes.func.isRequired,
     showLogs: React.PropTypes.func.isRequired,
     error: React.PropTypes.string,
     records: React.PropTypes.array.isRequired
@@ -17,16 +18,16 @@ export default class DeploymentsTable extends Component {
 
     return (
       <div>
-        <Error message={error} />
         <Table>
           <TableHeader>
             <TableColumn width="3%" />
-            <TableColumn width="20%">Date</TableColumn>
-            <TableColumn width="35%">Repository</TableColumn>
-            <TableColumn width="15%">Branch</TableColumn>
-            <TableColumn width="20%">User</TableColumn>
+            <TableColumn width="15%">Change</TableColumn>
+            <TableColumn width="15%">Date</TableColumn>
+            <TableColumn width="25%">Repository</TableColumn>
+            <TableColumn width="10%">Branch</TableColumn>
+            <TableColumn width="15%">User</TableColumn>
             <TableColumn width="10%">Status</TableColumn>
-            <TableColumn width="10%" />
+            <TableColumn width="12%" />
           </TableHeader>
           <TableBody>
             {records.map((record, index) => {
@@ -36,6 +37,7 @@ export default class DeploymentsTable extends Component {
               return (
                 <TableRow key={index}>
                   <TableIconCell color={color} icon="446" />
+                  <TableTextCell>{record.sha}</TableTextCell>
                   <TableTextCell>{record.date_relative}</TableTextCell>
                   <TableTextCell>{record.repository}</TableTextCell>
                   <TableTextCell>{record.branch}</TableTextCell>
@@ -46,6 +48,10 @@ export default class DeploymentsTable extends Component {
                       <TableAction
                         id={`view-${index}`} type="default" title="Show Logs" icon="489"
                         onClick={() => this.props.showLogs(record)}
+                      />
+                      <TableAction
+                        id={`view-${index}`} type="success" title={`Re-deploy ${record.sha}`} icon="356"
+                        onClick={() => this.props.deployChange(record.sha)}
                       />
                     </ButtonToolbar>
                   </TableCell>
