@@ -32,7 +32,7 @@ config.plugins = config.plugins.concat([
   }),
 
   // Separate the vender in a different file.
-  new webpack.optimize.CommonsChunkPlugin('vendors', 'auth0-github-deploy.vendors.' + project.version + '.js'),
+  new webpack.optimize.CommonsChunkPlugin('vendors', 'auth0-github-deploy.vendors.ui.' + project.version + '.js'),
 
   // Compress and uglify the output.
   new webpack.optimize.UglifyJsPlugin({
