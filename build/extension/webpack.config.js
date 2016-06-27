@@ -36,6 +36,7 @@ module.exports = externalModules.then((externals) => {
   externals.compatible['type-check'] = true; // Local: ~0.3.2 - Webtask: 0.3.1
   externals.compatible['winston'] = true; // Local: ^2.2.0 - Webtask: 1.0.0
   externals.compatible['xml2js'] = true; // Local: 0.4.15 - Webtask: 0.4.8
+  externals.compatible['github'] = true;
 
   // Additional dependencies that are available in webtask.
   externals.compatible['auth0'] = true;
