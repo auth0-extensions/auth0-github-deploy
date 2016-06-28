@@ -15,9 +15,21 @@
   "auth0": {
     "createClient": true,
     "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules",
-    "uninstallConfirmMessage": "You are about to uninstall the \"GitHub Deployment Extension\". If you proceed any changes you make to your repository will no longer be deployed to Auth0. Do you want to continue?",
+    "uninstallConfirmMessage": "You are about to uninstall the \"GitHub Deployment Extension\". If you proceed any changes you make to your repository will no longer be deployed to Auth0. Do you want to continue?"
   },
   "secrets": {
+    "AUTH0_DOMAIN": {
+      "description": "The Auth0 Domain of the Extension",
+      "required": true
+    },
+    "AUTH0_CLIENT_ID": {
+      "description": "The Auth0 Client ID of the Extension",
+      "required": true
+    },
+    "AUTH0_CLIENT_SECRET": {
+      "description": "The Auth0 Client Secret of the Extension",
+      "required": true
+    },
     "GITHUB_REPOSITORY": {
       "description": "The repository from which you want to deploy rules and database scripts",
       "required": true
