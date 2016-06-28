@@ -52,7 +52,7 @@ export const updateDatabases = (progress, client, databases) => {
     .then(connections =>
       Promise.map(databases,
         (database) => updateDatabase(progress, client, connections, database),
-        { concurrency: 2 })
+        { concurrency: constants.CONCURRENT_CALLS })
     );
 };
 
@@ -88,12 +88,12 @@ export const deleteRules = (progress, client, rules) => {
     return Promise.resolve(true);
   }
 
-  progress.log('Deleting rules...');
+  progress.log('Deleting rules that no longer exist in the repository...');
 
   return getRules(client)
     .then(existingRules => {
       progress.log(`Existing rules: ${JSON.stringify(existingRules.map(rule => ({ id: rule.id, name: rule.name, stage: rule.stage, order: rule.order })), null, 2)}`);
-      return Promise.map(existingRules, (rule) => deleteRule(progress, client, rules, rule), { concurrency: 2 });
+      return Promise.map(existingRules, (rule) => deleteRule(progress, client, rules, rule), { concurrency: constants.CONCURRENT_CALLS });
     });
 };
 
@@ -146,6 +146,6 @@ export const updateRules = (progress, client, rules) => {
   return getRules(client)
     .then(existingRules => {
       progress.log(`Existing rules: ${JSON.stringify(existingRules.map(rule => ({ id: rule.id, name: rule.name, stage: rule.stage, order: rule.order })), null, 2)}`);
-      return Promise.map(rules, (rule) => updateRule(progress, client, existingRules, rule.name, rule), { concurrency: 2 });
+      return Promise.map(rules, (rule) => updateRule(progress, client, existingRules, rule.name, rule), { concurrency: constants.CONCURRENT_CALLS });
     });
 };
