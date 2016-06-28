@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import Promise from 'bluebird';
 
+import logger from '../lib/logger';
+
 const defaultStorage = { };
 
 /*
@@ -8,6 +10,7 @@ const defaultStorage = { };
  */
 export const readStorage = (storageContext) => {
   if (!storageContext) {
+    logger.debug('Unable to read storage. Context not available.');
     return Promise.resolve(defaultStorage);
   }
 
@@ -18,7 +21,7 @@ export const readStorage = (storageContext) => {
       }
 
       const data = webtaskData || defaultStorage;
-      return resolve({ data });
+      return resolve(data);
     });
   });
 };
@@ -28,6 +31,7 @@ export const readStorage = (storageContext) => {
  */
 export const writeStorage = (storageContext, data) => {
   if (!storageContext) {
+    logger.debug('Unable to write storage. Context not available.');
     return Promise.resolve();
   }
 
