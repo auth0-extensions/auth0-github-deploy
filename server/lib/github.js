@@ -88,8 +88,7 @@ const getTree = (repository, branch, sha) =>
           try {
             const files = res.tree
               .filter(f => f.type === 'blob')
-              .map(f => f.path)
-              .filter(validFilesOnly);
+              .filter(f => validFilesOnly(f.path));
             return resolve(files);
           } catch (mappingError) {
             return reject(mappingError);
@@ -103,48 +102,48 @@ const getTree = (repository, branch, sha) =>
 /*
  * Download a single file.
  */
-const downloadFile = (repository, branch, fileName) => {
+const downloadFile = (repository, branch, file) => {
   const token = config('GITHUB_TOKEN');
-  const url = `https://${token}:x-oauth-basic@raw.githubusercontent.com/${repository}/${branch}/${fileName}`;
+  const url = `https://${token}:x-oauth-basic@api.github.com/repos/${repository}/git/blobs/${file.sha}`;
 
-  logger.debug(`Downloading file: 'https://YOUR-TOKEN:x-oauth-basic@raw.githubusercontent.com/${repository}/${branch}/${fileName}''`);
+  return request({ uri: url, json: true, headers: { 'user-agent': 'auth0-github-deploy' } })
+    .then(blob => {
+      logger.debug(`Downloaded ${file.path} (${file.sha})`);
 
-  return request({ uri: url, json: false })
-    .then(body => ({
-      fileName,
-      contents: body
-    }));
+      return {
+        fileName: file.path,
+        contents: (new Buffer(blob.content, 'base64')).toString()
+      };
+    });
 };
 
 /*
  * Download a single rule with its metadata.
  */
 const downloadRule = (repository, branch, ruleName, rule) => {
-  let req = Promise.resolve();
   const currentRule = {
     ...rule,
     name: ruleName
   };
 
+  const downloads = [ ];
+
   if (rule.script) {
-    req = req.then(() => downloadFile(repository, branch, `${constants.RULES_DIRECTORY}/${encodeURIComponent(ruleName)}.js`)
+    downloads.push(downloadFile(repository, branch, rule.scriptFile)
       .then(file => {
         currentRule.script = file.contents;
-        return currentRule;
-      })
-    );
+      }));
   }
 
   if (rule.metadata) {
-    req = req.then(() => downloadFile(repository, branch, `${constants.RULES_DIRECTORY}/${encodeURIComponent(ruleName)}.json`)
+    downloads.push(downloadFile(repository, branch, rule.metadataFile)
       .then(file => {
         currentRule.metadata = JSON.parse(file.contents);
-        return currentRule;
-      })
-    );
+      }));
   }
 
-  return req.then(() => currentRule);
+  return Promise.all(downloads)
+    .then(() => currentRule);
 };
 
 /*
@@ -155,14 +154,16 @@ const getRules = (repository, branch, files) => {
   const rules = { };
 
   // Determine if we have the script, the metadata or both.
-  _.filter(files, isRule).forEach(fileName => {
-    const ruleName = path.parse(fileName).name;
+  _.filter(files, f => isRule(f.path)).forEach(file => {
+    const ruleName = path.parse(file.path).name;
     rules[ruleName] = rules[ruleName] || { };
 
-    if (/\.js$/i.test(fileName)) {
+    if (/\.js$/i.test(file.path)) {
       rules[ruleName].script = true;
-    } else if (/\.json$/i.test(fileName)) {
+      rules[ruleName].scriptFile = file;
+    } else if (/\.json$/i.test(file.path)) {
       rules[ruleName].metadata = true;
+      rules[ruleName].metadataFile = file;
     }
   });
 
@@ -174,24 +175,25 @@ const getRules = (repository, branch, files) => {
  * Download a single database script.
  */
 const downloadDatabaseScript = (repository, branch, databaseName, scripts) => {
-  let req = Promise.resolve();
   const database = {
     name: databaseName,
     scripts: []
   };
 
+  const downloads = [ ];
   scripts.forEach(script => {
-    req = req.then(() => downloadFile(repository, branch, `${constants.DATABASE_CONNECTIONS_DIRECTORY}/${databaseName}/${script}.js`))
+    downloads.push(downloadFile(repository, branch, script)
       .then(file => {
         database.scripts.push({
-          stage: script,
+          stage: script.name,
           contents: file.contents
         });
-        return database;
-      });
+      })
+    );
   });
 
-  return req;
+  return Promise.all(downloads)
+    .then(() => database);
 };
 
 /*
@@ -201,11 +203,15 @@ const getDatabaseScripts = (repository, branch, files) => {
   const databases = { };
 
   // Determine if we have the script, the metadata or both.
-  _.filter(files, isDatabaseConnection).forEach(fileName => {
-    const script = getDatabaseScriptDetails(fileName);
+  _.filter(files, f => isDatabaseConnection(f.path)).forEach(file => {
+    const script = getDatabaseScriptDetails(file.path);
     if (script) {
       databases[script.database] = databases[script.database] || [ ];
-      databases[script.database].push(script.name);
+      databases[script.database].push({
+        ...script,
+        sha: file.sha,
+        path: file.path
+      });
     }
   });
 
@@ -218,7 +224,7 @@ const getDatabaseScripts = (repository, branch, files) => {
 export const getChanges = (repository, branch, sha) =>
   getTree(repository, branch, sha)
     .then(files => {
-      logger.debug(`Files in tree: ${JSON.stringify(files, null, 2)}`);
+      logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({ path: file.path, sha: file.sha })), null, 2)}`);
 
       const promises = {
         rules: getRules(repository, branch, files),
