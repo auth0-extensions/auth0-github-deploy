@@ -5,6 +5,7 @@ import GitHubApi from 'github';
 import request from 'request-promise';
 
 import config from './config';
+import logger from '../lib/logger';
 import * as constants from './constants';
 
 /*
@@ -56,7 +57,7 @@ const validFilesOnly = (fileName) => {
  */
 export const hasChanges = (commits) =>
   _.chain(commits)
-    .map(commit => _.union(commit.added, commit.modified))
+    .map(commit => _.union(commit.added, commit.modified, commit.removed))
     .flattenDeep()
     .uniq()
     .filter(validFilesOnly)
@@ -105,6 +106,8 @@ const getTree = (repository, branch, sha) =>
 const downloadFile = (repository, branch, fileName) => {
   const token = config('GITHUB_TOKEN');
   const url = `https://${token}:x-oauth-basic@raw.githubusercontent.com/${repository}/${branch}/${fileName}`;
+
+  logger.debug(`Downloading file: 'https://YOUR-TOKEN:x-oauth-basic@raw.githubusercontent.com/${repository}/${branch}/${fileName}''`);
 
   return request({ uri: url, json: false })
     .then(body => ({
@@ -215,6 +218,8 @@ const getDatabaseScripts = (repository, branch, files) => {
 export const getChanges = (repository, branch, sha) =>
   getTree(repository, branch, sha)
     .then(files => {
+      logger.debug(`Files in tree: ${JSON.stringify(files, null, 2)}`);
+
       const promises = {
         rules: getRules(repository, branch, files),
         databases: getDatabaseScripts(repository, branch, files)
