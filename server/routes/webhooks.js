@@ -16,17 +16,17 @@ export default (storageContext) => {
 
     // Only accept push requests.
     if (req.webhook.event !== 'push') {
-      return res.json({ message: `Request ignored, the '${req.webhook.event}' event is not supported.` });
+      return res.status(202).json({ message: `Request ignored, the '${req.webhook.event}' event is not supported.` });
     }
 
     // Only for the active branch.
     if (branch !== activeBranch) {
-      return res.json({ message: `Request ignored, '${branch}' is not the active branch.` });
+      return res.status(202).json({ message: `Request ignored, '${branch}' is not the active branch.` });
     }
 
     // Only run if there really are changes.
     if (!hasChanges(commits)) {
-      return res.json({ message: 'Request ignored, none of the Rules or Database Connection scripts were changed.' });
+      return res.status(202).json({ message: 'Request ignored, none of the Rules or Database Connection scripts were changed.' });
     }
 
     // Deploy the changes.
