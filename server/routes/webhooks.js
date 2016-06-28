@@ -31,18 +31,7 @@ export default (storageContext) => {
 
     // Deploy the changes.
     return deploy(storageContext, id, branch, repository, sha, user)
-      .then(stats => {
-        res.json({
-          connections: {
-            updated: stats.connectionsUpdated
-          },
-          rules: {
-            created: stats.rulesCreated,
-            updated: stats.rulesUpdated,
-            deleted: stats.rulesDeleted
-          }
-        });
-      })
+      .then(stats => res.json(stats))
       .catch(next);
   });
 
