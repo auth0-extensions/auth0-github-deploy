@@ -1,7 +1,7 @@
 {
   "title": "Auth0 GitHub Deployment",
   "name": "auth0-github-deploy",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Rules and Custom Database Connections from GitHub.",
   "type": "application",
@@ -18,15 +18,15 @@
   },
   "secrets": {
     "AUTH0_DOMAIN": {
-      "description": "The Auth0 Domain of the Extension",
+      "description": "The Auth0 Domain for the Extension",
       "required": true
     },
     "AUTH0_CLIENT_ID": {
-      "description": "The Auth0 Client ID of the Extension",
+      "description": "The Auth0 Client ID for the Extension",
       "required": true
     },
     "AUTH0_CLIENT_SECRET": {
-      "description": "The Auth0 Client Secret of the Extension",
+      "description": "The Auth0 Client Secret for the Extension",
       "required": true
     },
     "GITHUB_REPOSITORY": {

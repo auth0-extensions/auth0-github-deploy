@@ -44,7 +44,7 @@ export default (storageContext, id, branch, repository, sha, user) => {
   return getChanges(repository, branch, sha)
     .then(context => {
       progress.log(`Assets: ${JSON.stringify({ id, user, ...context }, null, 2)}`);
-      progress.log(`Getting access token for ${config('AUTH0_DOMAIN')}`);
+      progress.log(`Getting access token for ${config('AUTH0_CLIENT_ID')}/${config('AUTH0_DOMAIN')}`);
 
       // Send all changes to Auth0.
       return getForClient(config('AUTH0_DOMAIN'), config('AUTH0_CLIENT_ID'), config('AUTH0_CLIENT_SECRET'))
