@@ -14,13 +14,10 @@
   ],
   "auth0": {
     "createClient": true,
-    "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules"
+    "onUninstallPath": "/.extensions/on-uninstall",
+    "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules delete:clients"
   },
   "secrets": {
-    "AUTH0_DOMAIN": {
-      "description": "Your Auth0 account",
-      "required": true
-    },
     "GITHUB_REPOSITORY": {
       "description": "The repository from which you want to deploy rules and database scripts",
       "required": true

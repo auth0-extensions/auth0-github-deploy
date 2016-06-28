@@ -1,8 +1,9 @@
 import _ from 'lodash';
-import express from 'express';
+import { Router as router } from 'express';
 
 import html from './html';
 import meta from './meta';
+import hooks from './hooks';
 import webhooks from './webhooks';
 
 import config from '../lib/config';
@@ -11,11 +12,12 @@ import { readStorage } from '../lib/storage';
 import { dashboardAdmins, requireUser } from '../lib/middlewares';
 
 export default (storageContext) => {
-  const routes = express.Router();
+  const routes = router();
   routes.use('/', dashboardAdmins());
   routes.get('/', html());
   routes.use('/meta', meta());
   routes.use('/webhooks', webhooks(storageContext));
+  routes.use('/.extensions', hooks());
 
   routes.get('/api/config', requireUser, (req, res) => {
     res.json({
