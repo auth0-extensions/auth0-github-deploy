@@ -10,7 +10,7 @@ export default () => {
   <!DOCTYPE html>
   <html lang="en">
   <head>
-    <title>Auth0 - GitHub Deploy</title>
+    <title>Auth0 - GitHub Deployments</title>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

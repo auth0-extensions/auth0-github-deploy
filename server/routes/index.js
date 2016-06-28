@@ -13,11 +13,11 @@ import { dashboardAdmins, requireUser } from '../lib/middlewares';
 
 export default (storageContext) => {
   const routes = router();
+  routes.use('/.extensions', hooks());
   routes.use('/', dashboardAdmins());
   routes.get('/', html());
   routes.use('/meta', meta());
   routes.use('/webhooks', webhooks(storageContext));
-  routes.use('/.extensions', hooks());
 
   routes.get('/api/config', requireUser, (req, res) => {
     res.json({
