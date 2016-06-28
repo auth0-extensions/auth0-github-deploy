@@ -14,8 +14,7 @@
   ],
   "auth0": {
     "createClient": true,
-    "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules",
-    "uninstallConfirmMessage": "You are about to uninstall the \"GitHub Deployment Extension\". If you proceed any changes you make to your repository will no longer be deployed to Auth0. Do you want to continue?"
+    "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules"
   },
   "secrets": {
     "AUTH0_DOMAIN": {
