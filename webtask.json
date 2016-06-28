@@ -18,15 +18,7 @@
   },
   "secrets": {
     "AUTH0_DOMAIN": {
-      "description": "The Auth0 Domain for the Extension",
-      "required": true
-    },
-    "AUTH0_CLIENT_ID": {
-      "description": "The Auth0 Client ID for the Extension",
-      "required": true
-    },
-    "AUTH0_CLIENT_SECRET": {
-      "description": "The Auth0 Client Secret for the Extension",
+      "description": "Your Auth0 account",
       "required": true
     },
     "GITHUB_REPOSITORY": {

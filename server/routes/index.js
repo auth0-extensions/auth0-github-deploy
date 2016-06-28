@@ -25,7 +25,7 @@ export default (storageContext) => {
     });
   });
   routes.get('/api/deployments', requireUser, (req, res, next) =>
-    readStorage()
+    readStorage(storageContext)
       .then(data => res.json(_.sortByOrder(data.deployments || [], [ 'date' ], [ false ])))
       .catch(next)
   );

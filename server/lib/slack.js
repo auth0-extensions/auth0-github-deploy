@@ -28,7 +28,8 @@ const createPayload = (progress, extensionUrl) => {
     const fields = [
       { title: 'Repository', value: progress.repository, short: true },
       { title: 'Branch', value: progress.branch, short: true },
-      { title: 'ID', value: progress.id, short: true }
+      { title: 'ID', value: progress.id, short: true },
+      { title: 'Commit', value: `<https://github.com/${progress.repository}/commit/${progress.sha}|${progress.sha}>`, short: true }
     ];
 
     if (progress.connectionsUpdated) {
