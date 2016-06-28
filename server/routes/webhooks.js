@@ -31,7 +31,7 @@ export default (storageContext) => {
 
     // Deploy the changes.
     return deploy(storageContext, id, branch, repository, sha, user)
-      .then(stats => res.json(stats))
+      .then(stats => res.status(200).json(stats))
       .catch(next);
   });
 
