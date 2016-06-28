@@ -11,7 +11,7 @@ module.exports = (hookPath) =>
       logger.debug('Extension Hook validation token:', token);
 
       const isValid = jwt.verify(token, config('EXTENSION_SECRET'), {
-        audience: path.join(config('WT_URL'), hookPath),
+        audience: `${config('WT_URL')}${hookPath}`,
         issuer: `https://${config('AUTH0_DOMAIN')}`
       });
 
