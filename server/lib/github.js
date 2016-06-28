@@ -69,7 +69,9 @@ export const hasChanges = (commits) =>
 const getTree = (repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
-      const github = new GitHubApi();
+      const github = new GitHubApi({
+        version: '3.0.0'
+      });
       github.authenticate({
         type: 'oauth',
         token: config('GITHUB_TOKEN')
