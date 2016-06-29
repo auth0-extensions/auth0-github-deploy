@@ -33,18 +33,7 @@ export default (storageContext) => {
   );
   routes.post('/api/deployments', requireUser, (req, res, next) => {
     deploy(storageContext, 'manual', config('GITHUB_BRANCH'), config('GITHUB_REPOSITORY'), (req.body && req.body.sha) || config('GITHUB_BRANCH'), req.user.sub)
-      .then(stats => {
-        res.json({
-          connections: {
-            updated: stats.connectionsUpdated
-          },
-          rules: {
-            created: stats.rulesCreated,
-            updated: stats.rulesUpdated,
-            deleted: stats.rulesDeleted
-          }
-        });
-      })
+      .then(stats => res.json(stats))
       .catch(next);
   });
   return routes;
