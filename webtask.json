@@ -1,12 +1,13 @@
 {
   "title": "GitHub Deployments",
   "name": "auth0-github-deploy",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Rules and Custom Database Connections from GitHub.",
   "type": "application",
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-github-deploy/assets/logo.svg",
   "initialUrlPath": "/login",
+  "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Rules and Database Connection scripts from being deployed from GitHub to Auth0.",
   "repository": "https://github.com/auth0-extensions/auth0-github-deploy",
   "keywords": [
     "auth0",
@@ -19,6 +20,7 @@
   },
   "secrets": {
     "GITHUB_REPOSITORY": {
+      "example": "myorganization/myrepo",
       "description": "The repository from which you want to deploy rules and database scripts",
       "required": true
     },
@@ -33,8 +35,9 @@
       "type": "password"
     },
     "SLACK_INCOMING_WEBHOOK_URL": {
+      "example": "https://hooks.slack.com/services/...",
       "description": "Webhook URL for Slack used to notify you of successful and failed deployments",
-      "required": true
+      "required": false
     }
   }
 }
