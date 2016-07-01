@@ -11,6 +11,18 @@ import deploy from '../lib/deploy';
 import { readStorage } from '../lib/storage';
 import { dashboardAdmins, requireUser } from '../lib/middlewares';
 
+const getRepository = () => {
+  const repo = config('GITHUB_REPOSITORY');
+
+  const parts = repo.split('/');
+  if (parts.length === 5) {
+    const [ , , , account, repository ] = parts;
+    return `${account}/${repository}`;
+  }
+
+  return repo;
+};
+
 export default (storageContext) => {
   const routes = router();
   routes.use('/.extensions', hooks());
@@ -23,7 +35,7 @@ export default (storageContext) => {
     res.json({
       secret: config('EXTENSION_SECRET'),
       branch: config('GITHUB_BRANCH'),
-      repository: config('GITHUB_REPOSITORY')
+      repository: getRepository()
     });
   });
   routes.get('/api/deployments', requireUser, (req, res, next) =>
@@ -32,7 +44,7 @@ export default (storageContext) => {
       .catch(next)
   );
   routes.post('/api/deployments', requireUser, (req, res, next) => {
-    deploy(storageContext, 'manual', config('GITHUB_BRANCH'), config('GITHUB_REPOSITORY'), (req.body && req.body.sha) || config('GITHUB_BRANCH'), req.user.sub)
+    deploy(storageContext, 'manual', config('GITHUB_BRANCH'), getRepository(), (req.body && req.body.sha) || config('GITHUB_BRANCH'), req.user.sub)
       .then(stats => res.json(stats))
       .catch(next);
   });

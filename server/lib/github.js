@@ -65,6 +65,22 @@ export const hasChanges = (commits) =>
     .length > 0;
 
 /*
+ * Parse the repository.
+ */
+const parseRepo = (repository = '') => {
+  const parts = repository.split('/');
+  if (parts.length === 2) {
+    const [ user, repo ] = parts;
+    return { user, repo };
+  } else if (parts.length === 5) {
+    const [ , , , user, repo ] = parts;
+    return { user, repo };
+  }
+
+  throw new Error(`Invalid repository: ${repository}`);
+};
+
+/*
  * Get tree.
  */
 const getTree = (repository, branch, sha) =>
@@ -78,7 +94,7 @@ const getTree = (repository, branch, sha) =>
         token: config('GITHUB_TOKEN')
       });
 
-      const [ user, repo ] = repository.split('/');
+      const { user, repo } = parseRepo(repository);
       github.gitdata.getTree({ user, repo, sha: sha || branch, recursive: true },
         (err, res) => {
           if (err) {
@@ -114,6 +130,12 @@ const downloadFile = (repository, branch, file) => {
         fileName: file.path,
         contents: (new Buffer(blob.content, 'base64')).toString()
       };
+    })
+    .catch(err => {
+      logger.error(`Error downloading 'api.github.com/repos/${repository}/git/blobs/${file.sha}'`);
+      logger.error(err);
+
+      throw err;
     });
 };
 
