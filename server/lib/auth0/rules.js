@@ -46,7 +46,6 @@ export const deleteRules = (progress, client, rules) => {
 
   return getRules(progress, client)
     .then(existingRules => {
-      console.log(arguments);
       progress.log(`Existing rules: ${JSON.stringify(existingRules.map(rule => ({ id: rule.id, name: rule.name, stage: rule.stage, order: rule.order })), null, 2)}`);
       return Promise.map(existingRules, (rule) => deleteRule(progress, client, rules, rule), { concurrency: constants.CONCURRENT_CALLS });
     });
@@ -114,21 +113,33 @@ const validateRulesStages = (progress, client, rules, existingRules) => new Prom
   const changeStages = _.filter(rules, (rule) => rule.metadata && rule.metadata.stage && _.some(existingRules, (existing) => existing.name === rule.name && existing.stage !== rule.metadata.stage)).map(rule => rule.name);
   if (changeStages.length > 0) return reject(new ValidationError(`The following rules changed stage which is not allowed: ${changeStages}. Rename the rules to recreate them and avoid this error.`));
     
-  // Rules with the same order number
-  const duplicatedStageOrder = _(rules)
+  resolve(existingRules);
+});
+
+const validateRulesOrder = (progress, client, rules, existingRules) => new Promise((resolve, reject) => {
+  const rulesWithOrder = _(rules)
     .filter(rule => rule.metadata && rule.metadata.order)
-    .countBy(rule => `Stage: '${rule.metadata.stage || constants.DEFAULT_RULE_STAGE}' Order: ${rule.metadata.order}`)
+    .map(rule => ({name : rule.name, stage : (rule.metadata.stage || constants.DEFAULT_RULE_STAGE), order : rule.metadata.order}));
+
+  // Rules with the same order number
+  const duplicatedStageOrder = rulesWithOrder
+    .countBy(rule => `Stage: '${rule.stage}' Order: ${rule.order}`)
     .omit(count => count < 2)
     .keys()
     .value();
     
   if (duplicatedStageOrder.length > 0) return reject(new ValidationError(`There are multiple rules for the following stage-order combinations [${duplicatedStageOrder}]. Only one rule must be defined for the same order number in a stage.`));
 
-  resolve(true);
-})
+  // Rules with same order than existing rules
+  const rulesRepeatingOrder = rulesWithOrder
+    .filter(rule => _.some(existingRules, existing => existing.name !== rule.name && existing.stage === rule.stage && existing.order === rule.order))
+    .map(rule => rule.name)
+    .value();
 
-const validateRulesOrder = (progress, client, rules, existingRules) => {
-};
+  if (rulesRepeatingOrder.length > 0) return reject(new ValidationError(`The following rules have the same order number that other existing rule: ${rulesRepeatingOrder}. Updating them may cause a failure in deployment, use different order numbers to ensure a succesful deployment`));
+
+  resolve(existingRules);
+});
 
 export const validateRules = (progress, client, rules) => {
   if (rules.length === 0) {
