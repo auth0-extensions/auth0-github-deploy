@@ -1,6 +1,6 @@
 import config from '../lib/config';
 import logger from '../lib/logger';
-import * as auth0 from '../lib/auth0';
+import auth0 from '../lib/auth0';
 
 import { pushToSlack } from './slack';
 import { getChanges } from './github';
