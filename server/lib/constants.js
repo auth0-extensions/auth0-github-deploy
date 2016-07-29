@@ -19,4 +19,6 @@ export const RULES_STAGES = [
   'user_blocked'
 ];
 
+export const DEFAULT_RULE_STAGE = RULES_STAGES[0];
+
 export const CONCURRENT_CALLS = 5;

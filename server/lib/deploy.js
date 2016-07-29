@@ -1,6 +1,6 @@
 import config from '../lib/config';
 import logger from '../lib/logger';
-import * as auth0 from '../lib/auth0';
+import auth0 from '../lib/auth0';
 
 import { pushToSlack } from './slack';
 import { getChanges } from './github';
@@ -51,6 +51,8 @@ export default (storageContext, id, branch, repository, sha, user) => {
         .then((client) => {
           context.client = client;
         })
+        .then(() => auth0.validateDatabases(progress,context.client, context.databases))
+        .then(() => auth0.validateRules(progress,context.client, context.rules))
         .then(() => auth0.updateDatabases(progress, context.client, context.databases))
         .then(() => auth0.deleteRules(progress, context.client, context.rules))
         .then(() => auth0.updateRules(progress, context.client, context.rules))
