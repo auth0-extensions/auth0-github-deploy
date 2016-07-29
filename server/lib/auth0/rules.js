@@ -38,10 +38,6 @@ const deleteRule = (progress, client, rules, existingRule) => {
  * Delete all rules.
  */
 export const deleteRules = (progress, client, rules) => {
-  if (rules.length === 0) {
-    return Promise.resolve(true);
-  }
-
   progress.log('Deleting rules that no longer exist in the repository...');
 
   return getRules(progress, client)
@@ -104,6 +100,14 @@ export const updateRules = (progress, client, rules) => {
     });
 };
 
+const validateRulesExistence = (progress, client, rules, existingRules) => new Promise((resolve, reject) => {
+  // Metadata without rules
+  const invalidRules = _.filter(rules, (rule) => rule.metadata && !rule.script).map(rule => rule.name);
+  if (invalidRules.length > 0) return reject(new ValidationError(`The following rules have metadata files, but have no script files: ${invalidRules}.`));
+
+  resolve(existingRules);
+});
+
 const validateRulesStages = (progress, client, rules, existingRules) => new Promise((resolve, reject) => {
   // Rules with invalid state
   const invalidStages = _.filter(rules, (rule) => rule.metadata && rule.metadata.stage && constants.RULES_STAGES.indexOf(rule.metadata.stage)<0).map(rule=> rule.name);
@@ -149,6 +153,7 @@ export const validateRules = (progress, client, rules) => {
   progress.log('Validating rules...');
 
   return getRules(progress, client)
+    .then(existingRules => validateRulesExistence(progress, client, rules, existingRules))
     .then(existingRules => validateRulesStages(progress, client, rules, existingRules))
     .then(existingRules => validateRulesOrder(progress, client, rules, existingRules));
 }

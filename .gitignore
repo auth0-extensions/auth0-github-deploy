@@ -1,4 +1,5 @@
-.DS_Store
+.DS_Store.
+.idea
 assets/app/*
 node_modules
 npm-debug.log
