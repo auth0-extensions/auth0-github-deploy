@@ -6,7 +6,7 @@ import deploy from '../lib/deploy';
 import { hasChanges } from '../lib/github';
 import { githubWebhook } from '../lib/middlewares';
 
-export default (storageContext) => {
+export default () => {
   const activeBranch = config('GITHUB_BRANCH');
   const githubSecret = config('EXTENSION_SECRET');
 
@@ -30,7 +30,7 @@ export default (storageContext) => {
     }
 
     // Deploy the changes.
-    return deploy(storageContext, id, branch, repository, sha, user)
+    return deploy(req.storage, id, branch, repository, sha, user, req.auth0)
       .then(stats => res.status(200).json(stats))
       .catch(next);
   });
