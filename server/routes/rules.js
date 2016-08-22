@@ -38,7 +38,7 @@ export default () => {
         return data;
       })
       .then(data => req.storage.write(data))
-      .then(() => req.status(200).send())
+      .then(() => res.status(200).send())
       .catch(next)
   });
 
