@@ -106,7 +106,7 @@ export const updateRules = (progress, client, rules) => {
 const validateRulesExistence = (progress, client, rules, existingRules, excluded) => new Promise((resolve, reject) => {
   // Metadata without rules
 
-  const invalidRules = _.filter(rules, (rule) => excluded.indexOf(rule.name) >= 0 || (rule.metadata && !rule.script))
+  const invalidRules = _.filter(rules, (rule) => excluded.indexOf(rule.name) < 0 && rule.metadata && !rule.script)
     .map(rule => rule.name);
 
   if (invalidRules.length > 0) return reject(new ValidationError(`The following rules have metadata files, but have no script files: ${invalidRules}.`));
