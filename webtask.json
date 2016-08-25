@@ -1,6 +1,6 @@
 {
-  "title": "GitHub Deployments",
-  "name": "auth0-github-deploy",
+  "title": "GitHub Deployments test",
+  "name": "auth0-github-deploy-test",
   "version": "1.2.7",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Rules and Custom Database Connections from GitHub.",
