@@ -2,6 +2,8 @@ export const RULES_DIRECTORY = 'rules';
 
 export const DATABASE_CONNECTIONS_DIRECTORY = 'database-connections';
 
+export const PAGES_DIRECTORY = 'pages';
+
 export const DATABASE_SCRIPTS = [
   'get_user',
   'create',
@@ -9,6 +11,11 @@ export const DATABASE_SCRIPTS = [
   'login',
   'change_password',
   'delete'
+];
+
+export const PAGE_NAMES = [
+  'password_reset',
+  'login'
 ];
 
 export const RULES_STAGES = [
