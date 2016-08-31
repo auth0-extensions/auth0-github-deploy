@@ -14,8 +14,10 @@ export const DATABASE_SCRIPTS = [
 ];
 
 export const PAGE_NAMES = [
-  'password_reset',
-  'login'
+  'password_reset.html',
+  'password_reset.json',
+  'login.html',
+  'login.json'
 ];
 
 export const RULES_STAGES = [

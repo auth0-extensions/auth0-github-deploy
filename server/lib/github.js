@@ -11,20 +11,20 @@ import * as constants from './constants';
 /*
  * Check if a file is part of the rules folder.
  */
-const isRule = (fileName) =>
-  fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
+const isRule = (file) =>
+  file.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
  */
-const isDatabaseConnection = (fileName) =>
-  fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+const isDatabaseConnection = (file) =>
+  file.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the pages folder.
  */
-const isPage = (fileName) =>
-fileName.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0;
+const isPage = (file) =>
+  file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
  * Get the details of a database file script.
@@ -48,14 +48,9 @@ const getDatabaseScriptDetails = (filename) => {
  * Only Javascript and JSON files.
  */
 const validFilesOnly = (fileName) => {
-  if (
-      fileName=='pages/password_reset.html'||
-      fileName=='pages/password_reset.json'||
-      fileName=='pages/login.html'||
-      fileName=='pages/login.json'
-  ){
+  if (isPage(fileName)) {
     return true;
-  }else if (isRule(fileName)) {
+  } else if (isRule(fileName)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isDatabaseConnection(fileName)) {
     const script = getDatabaseScriptDetails(fileName);
@@ -202,7 +197,8 @@ const getRules = (repository, branch, files) => {
   });
 
   // Download all rules.
-  return Promise.map(Object.keys(rules), (ruleName) => downloadRule(repository, branch, ruleName, rules[ruleName]), { concurrency: 2 });
+  return Promise.map(Object.keys(rules), (ruleName) =>
+    downloadRule(repository, branch, ruleName, rules[ruleName]), { concurrency: 2 });
 };
 
 /*
@@ -249,25 +245,29 @@ const getDatabaseScripts = (repository, branch, files) => {
     }
   });
 
-  return Promise.map(Object.keys(databases), (databaseName) => downloadDatabaseScript(repository, branch, databaseName, databases[databaseName]), { concurrency: 2 });
+  return Promise.map(Object.keys(databases), (databaseName) =>
+    downloadDatabaseScript(repository, branch, databaseName, databases[databaseName]),
+    { concurrency: 2 });
 };
 
 /*
  * Download a single page script.
  */
 const downloadPage = (repository, branch, pageName, page, shaToken) => {
+  const downloads = [];
   const currentPage = {
           ...page,
       name: pageName
-};
-  const downloads = [];
-  if(page.file)
+  };
+
+  if(page.file) {
     downloads.push(downloadFile(repository, branch, page.file, shaToken)
-        .then(file => {
-      currentPage.contents = file.contents;
-}));
-  return Promise.all(downloads)
-          .then(() => currentPage);
+      .then(file => {
+        currentPage.contents = file.contents;
+      }));
+  }
+
+  return Promise.all(downloads).then(() => currentPage);
 };
 
 /*
@@ -275,6 +275,7 @@ const downloadPage = (repository, branch, pageName, page, shaToken) => {
  */
 const getPages = (repository, branch, files, shaToken) => {
   const pages = {};
+
   // Determine if we have the script, the metadata or both.
   _.filter(files, f => isPage(f.path)).forEach(file => {
       let pageName = path.parse(file.path).name;
@@ -285,10 +286,14 @@ const getPages = (repository, branch, files, shaToken) => {
       pages[index].contents = null;
       pages[index].sha = file.sha;
       pages[index].path = file.path;
-      if(ext!='json')
-        pages[index].meta = path.parse(file.path).name+'.json';
-});
-  return Promise.map(Object.keys(pages), (pageName) => downloadPage(repository, branch, pageName, pages[pageName], shaToken), {concurrency: 2});
+
+      if(ext != 'json') {
+        pages[index].meta = path.parse(file.path).name + '.json';
+      }
+  });
+
+  return Promise.map(Object.keys(pages), (pageName) =>
+    downloadPage(repository, branch, pageName, pages[pageName], shaToken), {concurrency: 2});
 };
 
 /*
