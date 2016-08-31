@@ -4,6 +4,6 @@ const expressApp = require('./server');
 const logger = require('./server/lib/logger');
 
 module.exports = tools.createExpressServer(function(req, config) {
-  logger.info('Starting Delegated Administration extension - Version:', config('CLIENT_VERSION'));
+  logger.info('Starting Github deploy extension - Version:', config('CLIENT_VERSION'));
   return expressApp(config);
 });
