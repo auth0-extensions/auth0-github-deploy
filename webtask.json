@@ -16,7 +16,7 @@
   "auth0": {
     "createClient": true,
     "onUninstallPath": "/.extensions/on-uninstall",
-    "scopes": "read:connections update:connections read:rules create:rules update:rules delete:rules delete:clients"
+    "scopes": "update:tenant_settings update:clients read:clients read:client_keys read:connections update:connections read:rules create:rules update:rules delete:rules delete:clients"
   },
   "secrets": {
     "GITHUB_REPOSITORY": {

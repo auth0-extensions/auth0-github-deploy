@@ -13,7 +13,9 @@ export const updatePasswordResetPage = (progress, client, data) => {
     }
   });
 
-  if (payload.custom_login_page && payload.custom_login_page_on) {
+  if (payload.change_password) {
+    progress.log('Updating change password page...');
+
     return getClient(progress, client).then((clientId) => {
       client.tenant.tenant.patch({client_id: clientId}, payload);
     });
@@ -33,7 +35,9 @@ export const updateLoginPage = (progress, client, data) => {
     }
   });
 
-  if (payload.custom_login_page && payload.custom_login_page_on) {
+  if (payload.custom_login_page) {
+    progress.log('Updating login page...');
+
     return getClient(progress, client).then((clientId) => {
       client.clients.update({client_id: clientId}, payload);
     });
