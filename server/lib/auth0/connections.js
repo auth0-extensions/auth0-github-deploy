@@ -32,11 +32,6 @@ const updateDatabase = (progress, client, connections, database) => {
   const options = connection.options || { };
   options.customScripts = { };
 
-  // Reset all scripts.
-  constants.DATABASE_SCRIPTS.forEach(script => {
-    options.customScripts[script] = null;
-  });
-
   // Set all custom scripts from GitHub.
   database.scripts.forEach((script) => {
     options.customScripts[script.stage] = script.contents;
