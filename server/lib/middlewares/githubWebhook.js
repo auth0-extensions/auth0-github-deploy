@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ArgumentError, UnauthorizedError } from '../errors';
+import { ArgumentError, UnauthorizedError } from 'auth0-extension-tools';
 
 const calculateSignature = (key, blob) =>
   `sha1=${crypto.createHmac('sha1', key).update(blob).digest('hex')}`;

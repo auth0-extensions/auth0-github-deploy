@@ -4,3 +4,5 @@ assets/app/*
 node_modules
 npm-debug.log
 dist
+server/config.json
+server/data.json

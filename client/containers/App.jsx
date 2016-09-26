@@ -5,7 +5,7 @@ import { logout } from '../actions/auth';
 import Header from '../components/Header';
 
 import RequireAuthentication from './RequireAuthentication';
-import { ConfigContainer, DeploymentsContainer } from './';
+import { ConfigContainer, DeploymentsContainer, RulesContainer } from './';
 
 class App extends Component {
   render() {
@@ -44,6 +44,13 @@ class App extends Component {
                         </span>
                       </a>
                     </li>
+                    <li>
+                      <a data-toggle="tab" href="#rules">
+                        <span className="tab-title">
+                          Rules
+                        </span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
                 <div id="content-area" className="tab-content">
@@ -52,6 +59,9 @@ class App extends Component {
                   </div>
                   <div id="deployments" className="tab-pane">
                     <DeploymentsContainer />
+                  </div>
+                  <div id="rules" className="tab-pane">
+                    <RulesContainer />
                   </div>
                 </div>
               </div>
