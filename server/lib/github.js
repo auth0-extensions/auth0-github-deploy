@@ -289,8 +289,8 @@ const getPages = (repository, branch, files, shaToken) => {
 
   // Determine if we have the script, the metadata or both.
   _.filter(files, f => isPage(f.path)).forEach(file => {
-    let pageName = path.parse(file.path).name;
-    let ext = path.parse(file.path).ext;
+    const pageName = path.parse(file.path).name;
+    const ext = path.parse(file.path).ext;
     pages[pageName] = pages[pageName] || {};
 
     if (ext !== 'json') {
@@ -326,11 +326,9 @@ export const getChanges = (repository, branch, sha) =>
       };
 
       return Promise.props(promises)
-        .then((result) => {
-          return {
-            rules: unifyScripts(result.rules),
-            databases: unifyDatabases(result.databases),
-            pages: unifyScripts(result.pages)
-          }
-        });
+        .then((result) => ({
+          rules: unifyScripts(result.rules),
+          databases: unifyDatabases(result.databases),
+          pages: unifyScripts(result.pages)
+        }));
     });

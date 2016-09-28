@@ -47,7 +47,7 @@ class App extends Component {
                     <li>
                       <a data-toggle="tab" href="#rules">
                         <span className="tab-title">
-                          Rules
+                          Rules Configuration
                         </span>
                       </a>
                     </li>

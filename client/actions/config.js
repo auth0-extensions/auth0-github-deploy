@@ -4,7 +4,7 @@ import * as constants from '../constants';
 /*
  * Load the configuration settings.
  */
-export function fetchConfiguration() {
+export function fetchConfiguration() { // eslint-disable-line import/prefer-default-export
   return {
     type: constants.FETCH_CONFIGURATION,
     payload: {

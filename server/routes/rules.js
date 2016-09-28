@@ -2,7 +2,7 @@ import _ from 'lodash';
 import express from 'express';
 
 export default (storage) => {
-  const api = express.Router();
+  const api = express.Router(); // eslint-disable-line new-cap
 
   api.get('/', (req, res, next) => {
     req.auth0.rules.get()
@@ -15,8 +15,7 @@ export default (storage) => {
               _.forEach(rules, (rule) => {
                 result[rule.name] = (data.excluded_rules.indexOf(rule.name) >= 0);
               });
-            }
-            else {
+            } else {
               _.forEach(rules, (rule) => {
                 result[rule.name] = false;
               });
@@ -30,16 +29,16 @@ export default (storage) => {
   });
 
   api.post('/', (req, res, next) => {
-    const excluded_rules = req.body.names || [];
+    const excludedRules = req.body.names || [];
 
     storage.read()
       .then(data => {
-        data.excluded_rules = excluded_rules;
+        data.excluded_rules = excludedRules; // eslint-disable-line no-param-reassign
         return data;
       })
       .then(data => storage.write(data))
       .then(() => res.status(200).send())
-      .catch(next)
+      .catch(next);
   });
 
   return api;

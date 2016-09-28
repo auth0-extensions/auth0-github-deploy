@@ -10,7 +10,7 @@ export default (storage) => {
   const activeBranch = config('GITHUB_BRANCH');
   const githubSecret = config('EXTENSION_SECRET');
 
-  const webhooks = express.Router();
+  const webhooks = express.Router(); // eslint-disable-line new-cap
   webhooks.post('/deploy', githubWebhook(githubSecret), (req, res, next) => {
     const { id, branch, commits, repository, user, sha } = req.webhook;
 

@@ -7,7 +7,7 @@ import { middlewares } from 'auth0-extension-express-tools';
 
 import routes from './routes';
 import logger from './lib/logger';
-const config = require('./lib/config');
+import config from './lib/config';
 
 module.exports = (configProvider, storageProvider) => {
   config.setProvider(configProvider);
@@ -23,7 +23,7 @@ module.exports = (configProvider, storageProvider) => {
   app.use(bodyParser.json({
     verify: (req, res, buf, encoding) => {
       if (buf && buf.length) {
-        req.rawBody = buf.toString(encoding || 'utf8');
+        req.rawBody = buf.toString(encoding || 'utf8'); // eslint-disable-line no-param-reassign
       }
     }
   }));

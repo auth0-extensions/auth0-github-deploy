@@ -23,6 +23,6 @@ export default () => {
         logger.error(err);
         res.sendStatus(500);
       });
-    });
+  });
   return hooks;
 };

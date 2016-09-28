@@ -15,7 +15,7 @@ export default (storage, id, branch, repository, sha, user, client) => {
 
   const slackTemplate = {
     fallback: 'GitHub to Auth0 Deployment',
-    text: `GitHub to Auth0 Deployment`
+    text: 'GitHub to Auth0 Deployment'
   };
 
   return sourceDeploy({ id, branch, repository, sha, user }, context, client, storage, config, slackTemplate);

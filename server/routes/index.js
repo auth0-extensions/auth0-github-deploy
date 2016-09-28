@@ -33,7 +33,7 @@ export default (storage) => {
     clientSecret: config('AUTH0_CLIENT_SECRET')
   }));
   routes.use('/.extensions', hooks());
-  routes.use('/', dashboardAdmins());
+  routes.use('/', dashboardAdmins(config('AUTH0_DOMAIN'), 'Github Deployments', config('AUTH0_RTA')));
   routes.get('/', html());
   routes.use('/meta', meta());
   routes.use('/webhooks', webhooks(storage));
