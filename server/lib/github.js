@@ -170,7 +170,7 @@ const downloadRule = (repository, branch, ruleName, rule) => {
     downloads.push(downloadFile(repository, branch, rule.metadataFile)
       .then(file => {
         currentRule.metadata = true;
-        currentRule.metadataFile = JSON.parse(file.contents);
+        currentRule.metadataFile = file.contents;
       }));
   }
 

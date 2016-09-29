@@ -34,6 +34,6 @@ module.exports = (configProvider, storageProvider) => {
   app.use('/', routes(storage));
 
   // Generic error handler.
-  app.use(middlewares.errorHandler);
+  app.use(middlewares.errorHandler());
   return app;
 };
