@@ -18,7 +18,7 @@ module.exports = externalModules.then((externals) => {
   externals.compatible['express'] = true; // Local: ^4.13.3, ~4.11.0, ~4.13.1, ~3*, <3, 2.5.8, ^4.12.3, ^4.12.0, ^4.13.4 - Webtask: 4.12.4
   externals.compatible['express-jwt'] = true; // Local: ^3.1.0, ^3.3.0 - Webtask: 3.1.0
   externals.compatible['iconv-lite'] = true; // Local: 0.4.13 - Webtask: 0.4.10
-  externals.compatible['lodash'] = true; // Local: ^3.10.0, ^3.10.1, ^4.6.1, ^4.0.0, ~3.10.1, ^4.3.0, ~4.5.1, ^4.1.0, ^4.2.0, ^4.2.1, ^4.5.0, ~3.5.0 - Webtask: 3.10.1
+  externals.compatible['lodash'] = 'lodash@4.8.2'; // Local: ^3.10.0, ^3.10.1, ^4.6.1, ^4.0.0, ~3.10.1, ^4.3.0, ~4.5.1, ^4.1.0, ^4.2.0, ^4.2.1, ^4.5.0, ~3.5.0 - Webtask: 3.10.1
   externals.compatible['lru-cache'] = true; // Local: ^4.0.0, ~4.0.0, 2 - Webtask: 2.6.4
   externals.compatible['mime-db'] = true; // Local: >= 1.21.0 < 2, ~1.22.0 - Webtask: 1.10.0
   externals.compatible['moment'] = true; // Local: ^2.12.0 - Webtask: 2.10.3

@@ -48,7 +48,7 @@ export default (storage) => {
   });
   routes.get('/api/deployments', requireUser, (req, res, next) =>
     storage.read()
-      .then(data => res.json(_.sortByOrder(data.deployments || [], [ 'date' ], [ false ])))
+      .then(data => res.json(_.orderBy(data.deployments || [], [ 'date' ], [ 'desc' ])))
       .catch(next)
   );
   routes.post('/api/deployments', requireUser, (req, res, next) => {
