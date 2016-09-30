@@ -42,7 +42,8 @@ export default () => {
     const settings = {
       AUTH0_DOMAIN: config('AUTH0_DOMAIN'),
       BASE_URL: urlHelpers.getBaseUrl(req),
-      BASE_PATH: urlHelpers.getBasePath(req)
+      BASE_PATH: urlHelpers.getBasePath(req),
+      AUTH0_MANAGE_URL: config('AUTH0_MANAGE_URL') || 'http://manage.auth0.com'
     };
 
     // Render from CDN.

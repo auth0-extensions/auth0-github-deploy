@@ -20,10 +20,10 @@ class App extends Component {
                   <div className="col-xs-12 content-header">
                     <ol className="breadcrumb">
                       <li>
-                        <a href="https://manage.auth0.com/">Auth0 Dashboard</a>
+                        <a href={window.config.AUTH0_MANAGE_URL}>Auth0 Dashboard</a>
                       </li>
                       <li>
-                        <a href="https://manage.auth0.com/#/extensions">Extensions</a>
+                        <a href={`${window.config.AUTH0_MANAGE_URL}/#/extensions`}>Extensions</a>
                       </li>
                     </ol>
                     <h1 className="pull-left" style={{ paddingTop: '10px' }}>GitHub Integration</h1></div>

@@ -39,7 +39,7 @@ module.exports = externalModules.then((externals) => {
   externals.compatible['github'] = true;
 
   // Additional dependencies that are available in webtask.
-  externals.compatible['auth0'] = 'auth0@2.1.0';
+  externals.compatible['auth0'] = 'auth0@2.4.0';
   externals.compatible['nconf'] = true;
   externals.compatible['node-uuid'] = true;
   externals.compatible['jade'] = true;
