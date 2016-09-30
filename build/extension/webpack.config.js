@@ -40,6 +40,7 @@ module.exports = externalModules.then((externals) => {
 
   // Additional dependencies that are available in webtask.
   externals.compatible['auth0'] = 'auth0@2.4.0';
+  externals.compatible['auth0-oauth2-express'] = 'auth0-oauth2-express@1.1.5';
   externals.compatible['nconf'] = true;
   externals.compatible['node-uuid'] = true;
   externals.compatible['jade'] = true;
