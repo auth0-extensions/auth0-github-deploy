@@ -18,7 +18,7 @@ export const rules = createReducer(fromJS(initialState), { // eslint-disable-lin
   [constants.FETCH_RULES_REJECTED]: (state, action) =>
     state.merge({
       loading: false,
-      error: `An error occured while loading the applications: ${action.errorMessage}`
+      error: `An error occured while loading the rules: ${action.errorMessage}`
     }),
   [constants.FETCH_RULES_FULFILLED]: (state, action) =>
     state.merge({
