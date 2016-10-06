@@ -7,7 +7,8 @@ const initialState = {
   loading: false,
   error: null,
   record: { },
-  showNotification: false
+  showNotification: false,
+  activeTab: 'config'
 };
 
 export const config = createReducer(fromJS(initialState), { // eslint-disable-line import/prefer-default-export
@@ -42,5 +43,20 @@ export const config = createReducer(fromJS(initialState), { // eslint-disable-li
   [constants.CLOSE_NOTIFICATION_FULFILLED]: (state) =>
     state.merge({
       loading: false
+    }),
+  [constants.CONFIRM_NOTIFICATION_PENDING]: (state) =>
+      state.merge({
+        loading: true,
+        showNotification: false
+      }),
+  [constants.CONFIRM_NOTIFICATION_REJECTED]: (state) =>
+    state.merge({
+      loading: false
+    }),
+  [constants.CONFIRM_NOTIFICATION_FULFILLED]: (state) =>
+    state.merge({
+      loading: false,
+      showNotification: false,
+      activeTab: 'rules'
     })
 });
