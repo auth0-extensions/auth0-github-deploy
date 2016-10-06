@@ -4,8 +4,7 @@ import { Confirm } from './Dashboard';
 export default class NotificationDialog extends Component {
   static propTypes = {
     show: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    onConfirm: PropTypes.func.isRequired
+    onClose: PropTypes.func.isRequired
   };
 
   shouldComponentUpdate(nextProps) {
@@ -13,7 +12,7 @@ export default class NotificationDialog extends Component {
   }
 
   confirm = () => {
-    this.props.onConfirm();
+    // redirect to rules management page
     this.props.onClose();
   }
 

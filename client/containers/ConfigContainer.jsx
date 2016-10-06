@@ -24,11 +24,6 @@ export default connectContainer(class extends Component {
     closeNotification: PropTypes.func.isRequired
   }
 
-  goToRules() {
-    // redirect to rules tab
-    return;
-  }
-
   componentWillMount() {
     this.props.fetchConfiguration();
   }
@@ -38,7 +33,7 @@ export default connectContainer(class extends Component {
 
     return (
       <div>
-        <NotificationDialog show={showNotification} onClose={this.props.closeNotification} onConfirm={this.goToRules} />
+        <NotificationDialog show={showNotification} onClose={this.props.closeNotification} />
         <div className="row">
           <div className="col-xs-12">
             <Error message={error} />
