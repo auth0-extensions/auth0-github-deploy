@@ -66,6 +66,6 @@ export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 // Logout.
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
-//Notifications
+// Notifications
 export const OPEN_RULE_NOTIFICATION = 'OPEN_RULE_NOTIFICATION';
 export const CLOSE_RULE_NOTIFICATION = 'CLOSE_RULE_NOTIFICATION';

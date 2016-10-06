@@ -24,7 +24,7 @@
     "build": "npm run clean && npm run client:build && npm run extension:build && npm run extension:bundle",
     "win-build": "cross-env NODE_ENV=production && npm run clean && npm run client:build && npm run extension:build && npm run win-extension:bundle",
     "tag": "git tag $npm_package_version && git push --tags",
-    "lint:js": "eslint --ignore-path .gitignore --ignore-pattern build --ignore-pattern webpack ."
+    "lint:js": "eslint --ignore-path .gitignore --ignore-pattern tests --ignore-pattern build --ignore-pattern webpack ."
   },
   "keywords": [
     "auth0"
