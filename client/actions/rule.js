@@ -28,3 +28,14 @@ export function updateRules(data) {
     }
   };
 }
+
+export function openNotification() {
+  return {
+    type: constants.OPEN_RULE_NOTIFICATION
+  };
+}
+export function closeNotification() {
+  return {
+    type: constants.CLOSE_RULE_NOTIFICATION
+  };
+}

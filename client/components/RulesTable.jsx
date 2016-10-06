@@ -1,28 +1,27 @@
 import React, { Component } from 'react';
 import {
   Table,
-  TableAction,
-  TableCell,
   TableBody,
-  TableIconCell,
   TableTextCell,
   TableHeader,
   TableColumn,
-  TableRow
+  TableRow,
+  Alert
 } from './Dashboard';
-import Alert from 'react-s-alert';
-import 'react-s-alert/dist/s-alert-default.css';
-import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 export default class RulesTable extends Component {
   static propTypes = {
     rules: React.PropTypes.array.isRequired,
     loading: React.PropTypes.bool.isRequired,
-    saveManualRules: React.PropTypes.func.isRequired
+    saveManualRules: React.PropTypes.func.isRequired,
+    openNotification: React.PropTypes.func.isRequired,
+    closeNotification: React.PropTypes.func.isRequired,
+    showNotification: React.PropTypes.bool.isRequired,
+    notificationType: React.PropTypes.string.isRequired,
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.rules !== this.props.rules;
+    return nextProps.rules !== this.props.rules || this.props.showNotification!==nextProps.showNotification;
   }
 
   onChangeManual = (e) => {
@@ -35,10 +34,10 @@ export default class RulesTable extends Component {
     });
     if (manualRules.length > 0)
       this.props.saveManualRules({ names: manualRules }).then(() => {
-        Alert.info('Manual rules were updated.', {
-          effect: 'slide',
-          limit: 1
-        });
+        this.props.openNotification();
+        setTimeout(()=>{
+          this.props.closeNotification();
+        },10000);
       });
   }
 
@@ -46,7 +45,12 @@ export default class RulesTable extends Component {
     const { rules } = this.props;
     return (
       <div>
-        <Alert stack={{ limit: 3 }} position='top' />
+        <Alert show={this.props.showNotification}
+               onClose={this.props.closeNotification}
+               type={this.props.notificationType}
+        >
+          Manual rules were updated.
+        </Alert>
         <Table>
           <TableHeader>
             <TableColumn width="80%">Name</TableColumn>
@@ -68,7 +72,8 @@ export default class RulesTable extends Component {
             })}
           </TableBody>
         </Table>
-        <button className="btn btn-success pull-right" onClick={this.onChangeManual}>Update Manual Rules</button>
+        <button className="btn btn-success pull-right" onClick={this.onChangeManual}>Update Manual Rules
+        </button>
       </div>
     );
   }
