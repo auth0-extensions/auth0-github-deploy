@@ -1,7 +1,9 @@
 import expect from 'expect';
+import moment from 'moment';
+
 import { deployments } from '../../../client/reducers/deployments';
 import * as constants from '../../../client/constants';
-import moment from 'moment';
+
 const initialState = {
   loading: false,
   error: null,
@@ -113,7 +115,7 @@ describe('deployments reducer', () => {
               _id: '49559553682563810286559514516535449676088458549131214850',
               client_name: 'My App',
               connection: 'Username-Password-Authentication',
-              date: '2016-09-26T13:03:36.005Z',
+              date: '2016-09-26T13:03:36.005Z'
             }
           ]
         }

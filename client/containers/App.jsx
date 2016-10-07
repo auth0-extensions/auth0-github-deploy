@@ -31,21 +31,21 @@ class App extends Component {
                 </div>
                 <div className="widget-title title-with-nav-bars">
                   <ul className="nav nav-tabs">
-                    <li className={activeTab === "config" ? "active" : ""}>
+                    <li className={activeTab === 'config' ? 'active' : ''}>
                       <a data-toggle="tab" href="#config">
                         <span className="tab-title">
                           Configuration
                         </span>
                       </a>
                     </li>
-                    <li className={activeTab === "deployments" ? "active" : ""}>
+                    <li className={activeTab === 'deployments' ? 'active' : ''}>
                       <a data-toggle="tab" href="#deployments">
                         <span className="tab-title">
                           Deployments
                         </span>
                       </a>
                     </li>
-                    <li className={activeTab === "rules" ? "active" : ""}>
+                    <li className={activeTab === 'rules' ? 'active' : ''}>
                       <a data-toggle="tab" href="#rules">
                         <span className="tab-title">
                           Rules Configuration
@@ -53,15 +53,15 @@ class App extends Component {
                       </a>
                     </li>
                   </ul>
-                </div>
+                </div>'
                 <div id="content-area" className="tab-content">
-                  <div id="config" className={activeTab === "config" ? "tab-pane active" : "tab-pane"}>
+                  <div id="config" className={activeTab === 'config' ? 'tab-pane active' : 'tab-pane'}>
                     <ConfigContainer />
                   </div>
-                  <div id="deployments" className={activeTab === "deployments" ? "tab-pane active" : "tab-pane"}>
+                  <div id="deployments" className={activeTab === 'deployments' ? 'tab-pane active' : 'tab-pane'}>
                     <DeploymentsContainer />
                   </div>
-                  <div id="rules" className={activeTab === "rules" ? "tab-pane active" : "tab-pane"}>
+                  <div id="rules" className={activeTab === 'rules' ? 'tab-pane active' : 'tab-pane'}>
                     <RulesContainer />
                   </div>
                 </div>
@@ -78,7 +78,7 @@ function select(state) {
   return {
     user: state.auth.get('user'),
     issuer: state.auth.get('issuer'),
-    activeTab: state.config.get('activeTab'),
+    activeTab: state.config.get('activeTab')
   };
 }
 

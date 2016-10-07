@@ -11,12 +11,10 @@
     "client:build": "npm run clean && cross-env NODE_ENV=production webpack --config ./build/webpack/config.prod.js --colors -p",
     "serve:dev": "cross-env NODE_ENV=development nodemon --ignore assets/app/ --ignore build/webpack/ --ignore client/ --ignore node_modules/ ./build/webpack/server.js",
     "serve:prod": "cross-env NODE_ENV=production node index.js",
-
     "test": "npm run test:pre && cross-env NODE_ENV=test nyc mocha tests/mocha.js ./tests/**/*.tests.js",
     "test:watch": "npm run test:pre && cross-env NODE_ENV=test mocha tests/mocha.js ./tests/**/*.tests.js --watch",
     "test:pre": "npm run test:clean",
     "test:clean": "rimraf ./coverage && rimraf ./.nyc_output",
-
     "extension:build": "cross-env NODE_ENV=production webpack -p --config ./build/extension/webpack.config.js",
     "extension:bundle": "cp ./dist/auth0-github-deploy.extension.$npm_package_version.js ./build/bundle.js",
     "win-extension:bundle": "copy dist\\auth0-github-deploy.extension.%npm_package_version%.js build\\bundle.js /y",
@@ -24,7 +22,7 @@
     "build": "npm run clean && npm run client:build && npm run extension:build && npm run extension:bundle",
     "win-build": "cross-env NODE_ENV=production && npm run clean && npm run client:build && npm run extension:build && npm run win-extension:bundle",
     "tag": "git tag $npm_package_version && git push --tags",
-    "lint:js": "eslint --ignore-path .gitignore --ignore-pattern tests --ignore-pattern build --ignore-pattern webpack ."
+    "lint:js": "eslint --ignore-path .gitignore --ignore-pattern build --ignore-pattern webpack ."
   },
   "keywords": [
     "auth0"
@@ -51,6 +49,7 @@
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "ejs": "^2.4.2",
+    "expect": "^1.20.2",
     "express": "^4.14.0",
     "express-jwt": "^3.4.0",
     "github": "^0.2.4",
