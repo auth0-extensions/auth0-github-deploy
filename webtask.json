@@ -1,7 +1,7 @@
 {
   "title": "GitHub Deployments",
   "name": "auth0-github-deploy",
-  "version": "1.2.8",
+  "version": "2.0.0",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Rules and Custom Database Connections from GitHub.",
   "type": "application",
@@ -9,6 +9,7 @@
   "initialUrlPath": "/login",
   "uninstallConfirmMessage": "Do you really want to uninstall this extension? Doing so will stop any Rules and Database Connection scripts from being deployed from GitHub to Auth0",
   "repository": "https://github.com/auth0-extensions/auth0-github-deploy",
+  "useHashName": false,
   "keywords": [
     "auth0",
     "extension"

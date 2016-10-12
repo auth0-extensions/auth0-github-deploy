@@ -17,11 +17,11 @@ export default class RulesTable extends Component {
     openNotification: React.PropTypes.func.isRequired,
     closeNotification: React.PropTypes.func.isRequired,
     showNotification: React.PropTypes.bool.isRequired,
-    notificationType: React.PropTypes.string.isRequired,
+    notificationType: React.PropTypes.string.isRequired
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.rules !== this.props.rules || this.props.showNotification!==nextProps.showNotification;
+    return nextProps.rules !== this.props.rules || this.props.showNotification !== nextProps.showNotification;
   }
 
   onChangeManual = (e) => {

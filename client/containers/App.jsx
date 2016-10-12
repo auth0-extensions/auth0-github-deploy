@@ -53,7 +53,7 @@ class App extends Component {
                       </a>
                     </li>
                   </ul>
-                </div>'
+                </div>
                 <div id="content-area" className="tab-content">
                   <div id="config" className={activeTab === 'config' ? 'tab-pane active' : 'tab-pane'}>
                     <ConfigContainer />
