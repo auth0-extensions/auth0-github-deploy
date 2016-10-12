@@ -14,7 +14,7 @@
     "extension:bundle": "cp ./dist/auth0-github-deploy.extension.$npm_package_version.js ./build/bundle.js",
     "extension:size": "cross-env NODE_ENV=production webpack -p --config ./build/extension/webpack.config.js --json > ./build/extension/bundle-size.json && node ./build/extension/bundle-size.js",
     "lint:js": "eslint --ignore-path .gitignore --ignore-pattern build --ignore-pattern webpack .",
-    "serve:dev": "cross-env NODE_ENV=development nodemon --ignore assets/app/ --ignore build/webpack/ --ignore client/ --ignore node_modules/ ./build/webpack/server.js",
+    "serve:dev": "cross-env NODE_ENV=development nodemon --ignore assets/app/ --ignore build/webpack/ --ignore server/data.json --ignore client/ --ignore node_modules/ ./build/webpack/server.js",
     "serve:prod": "cross-env NODE_ENV=production node index.js",
     "tag": "git tag $npm_package_version && git push --tags",
     "test:clean": "rimraf ./coverage && rimraf ./.nyc_output",
