@@ -3,22 +3,28 @@ import path from 'path';
 import Promise from 'bluebird';
 import GitHubApi from 'github';
 import request from 'request-promise';
+import { constants, unifyDatabases, unifyScripts } from 'auth0-source-control-extension-tools';
 
 import config from './config';
 import logger from '../lib/logger';
-import * as constants from './constants';
 
 /*
  * Check if a file is part of the rules folder.
  */
-const isRule = (fileName) =>
-  fileName.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
+const isRule = (file) =>
+file.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
  */
-const isDatabaseConnection = (fileName) =>
-  fileName.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+const isDatabaseConnection = (file) =>
+file.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+
+/*
+ * Check if a file is part of the pages folder.
+ */
+const isPage = (file) =>
+file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
  * Get the details of a database file script.
@@ -42,13 +48,14 @@ const getDatabaseScriptDetails = (filename) => {
  * Only Javascript and JSON files.
  */
 const validFilesOnly = (fileName) => {
-  if (isRule(fileName)) {
+  if (isPage(fileName)) {
+    return true;
+  } else if (isRule(fileName)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isDatabaseConnection(fileName)) {
     const script = getDatabaseScriptDetails(fileName);
     return !!script;
   }
-
   return false;
 };
 
@@ -56,13 +63,13 @@ const validFilesOnly = (fileName) => {
  * Get a flat list of changes and files that need to be added/updated/removed.
  */
 export const hasChanges = (commits) =>
-  _.chain(commits)
-    .map(commit => _.union(commit.added, commit.modified, commit.removed))
-    .flattenDeep()
-    .uniq()
-    .filter(validFilesOnly)
-    .value()
-    .length > 0;
+_.chain(commits)
+  .map(commit => _.union(commit.added, commit.modified, commit.removed))
+  .flattenDeep()
+  .uniq()
+  .filter(validFilesOnly)
+  .value()
+  .length > 0;
 
 /*
  * Parse the repository.
@@ -144,23 +151,26 @@ const downloadFile = (repository, branch, file) => {
  */
 const downloadRule = (repository, branch, ruleName, rule) => {
   const currentRule = {
-    ...rule,
+    script: false,
+    metadata: false,
     name: ruleName
   };
 
-  const downloads = [ ];
+  const downloads = [];
 
   if (rule.script) {
     downloads.push(downloadFile(repository, branch, rule.scriptFile)
       .then(file => {
-        currentRule.script = file.contents;
+        currentRule.script = true;
+        currentRule.scriptFile = file.contents;
       }));
   }
 
   if (rule.metadata) {
     downloads.push(downloadFile(repository, branch, rule.metadataFile)
       .then(file => {
-        currentRule.metadata = JSON.parse(file.contents);
+        currentRule.metadata = true;
+        currentRule.metadataFile = file.contents;
       }));
   }
 
@@ -173,12 +183,12 @@ const downloadRule = (repository, branch, ruleName, rule) => {
  */
 const getRules = (repository, branch, files) => {
   // Rules object.
-  const rules = { };
+  const rules = {};
 
   // Determine if we have the script, the metadata or both.
   _.filter(files, f => isRule(f.path)).forEach(file => {
     const ruleName = path.parse(file.path).name;
-    rules[ruleName] = rules[ruleName] || { };
+    rules[ruleName] = rules[ruleName] || {};
 
     if (/\.js$/i.test(file.path)) {
       rules[ruleName].script = true;
@@ -190,7 +200,8 @@ const getRules = (repository, branch, files) => {
   });
 
   // Download all rules.
-  return Promise.map(Object.keys(rules), (ruleName) => downloadRule(repository, branch, ruleName, rules[ruleName]), { concurrency: 2 });
+  return Promise.map(Object.keys(rules), (ruleName) =>
+    downloadRule(repository, branch, ruleName, rules[ruleName]), { concurrency: 2 });
 };
 
 /*
@@ -202,13 +213,13 @@ const downloadDatabaseScript = (repository, branch, databaseName, scripts) => {
     scripts: []
   };
 
-  const downloads = [ ];
+  const downloads = [];
   scripts.forEach(script => {
     downloads.push(downloadFile(repository, branch, script)
       .then(file => {
         database.scripts.push({
-          stage: script.name,
-          contents: file.contents
+          name: script.name,
+          scriptFile: file.contents
         });
       })
     );
@@ -222,13 +233,13 @@ const downloadDatabaseScript = (repository, branch, databaseName, scripts) => {
  * Get all database scripts.
  */
 const getDatabaseScripts = (repository, branch, files) => {
-  const databases = { };
+  const databases = {};
 
   // Determine if we have the script, the metadata or both.
   _.filter(files, f => isDatabaseConnection(f.path)).forEach(file => {
     const script = getDatabaseScriptDetails(file.path);
     if (script) {
-      databases[script.database] = databases[script.database] || [ ];
+      databases[script.database] = databases[script.database] || [];
       databases[script.database].push({
         ...script,
         sha: file.sha,
@@ -237,7 +248,64 @@ const getDatabaseScripts = (repository, branch, files) => {
     }
   });
 
-  return Promise.map(Object.keys(databases), (databaseName) => downloadDatabaseScript(repository, branch, databaseName, databases[databaseName]), { concurrency: 2 });
+  return Promise.map(Object.keys(databases), (databaseName) =>
+      downloadDatabaseScript(repository, branch, databaseName, databases[databaseName]),
+    { concurrency: 2 });
+};
+
+/*
+ * Download a single page script.
+ */
+const downloadPage = (repository, branch, pageName, page, shaToken) => {
+  const downloads = [];
+  const currentPage = {
+    metadata: false,
+    name: pageName
+  };
+
+  if (page.file) {
+    downloads.push(downloadFile(repository, branch, page.file, shaToken)
+      .then(file => {
+        currentPage.htmlFile = file.contents;
+      }));
+  }
+
+  if (page.meta_file) {
+    downloads.push(downloadFile(repository, branch, page.meta_file, shaToken)
+      .then(file => {
+        currentPage.metadata = true;
+        currentPage.metadataFile = file.contents;
+      }));
+  }
+
+  return Promise.all(downloads).then(() => currentPage);
+};
+
+/*
+ * Get all pages.
+ */
+const getPages = (repository, branch, files, shaToken) => {
+  const pages = {};
+
+  // Determine if we have the script, the metadata or both.
+  _.filter(files, f => isPage(f.path)).forEach(file => {
+    const pageName = path.parse(file.path).name;
+    const ext = path.parse(file.path).ext;
+    pages[pageName] = pages[pageName] || {};
+
+    if (ext !== '.json') {
+      pages[pageName].file = file;
+      pages[pageName].sha = file.sha;
+      pages[pageName].path = file.path;
+    } else {
+      pages[pageName].meta_file = file;
+      pages[pageName].meta_sha = file.sha;
+      pages[pageName].meta_path = file.path;
+    }
+  });
+
+  return Promise.map(Object.keys(pages), (pageName) =>
+    downloadPage(repository, branch, pageName, pages[pageName], shaToken), { concurrency: 2 });
 };
 
 /*
@@ -246,16 +314,21 @@ const getDatabaseScripts = (repository, branch, files) => {
 export const getChanges = (repository, branch, sha) =>
   getTree(repository, branch, sha)
     .then(files => {
-      logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({ path: file.path, sha: file.sha })), null, 2)}`);
+      logger.debug(`Files in tree: ${JSON.stringify(files.map(file => ({
+        path: file.path,
+        sha: file.sha
+      })), null, 2)}`);
 
       const promises = {
         rules: getRules(repository, branch, files),
-        databases: getDatabaseScripts(repository, branch, files)
+        databases: getDatabaseScripts(repository, branch, files),
+        pages: getPages(repository, branch, files)
       };
 
       return Promise.props(promises)
         .then((result) => ({
-          rules: result.rules,
-          databases: result.databases
+          rules: unifyScripts(result.rules),
+          databases: unifyDatabases(result.databases),
+          pages: unifyScripts(result.pages)
         }));
     });

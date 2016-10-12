@@ -1,7 +1,8 @@
 import fs from 'fs';
-import url from 'url';
 import ejs from 'ejs';
 import path from 'path';
+
+import { urlHelpers } from 'auth0-extension-express-tools';
 
 import config from '../lib/config';
 
@@ -28,7 +29,7 @@ export default () => {
     <script type="text/javascript" src="//cdn.auth0.com/manage/v0.3.1715/js/bundle.js"></script>
     <script type="text/javascript">window.config = <%- JSON.stringify(config) %>;</script>
     <% if (assets.vendors) { %><script type="text/javascript" src="/app/<%= assets.vendors %>"></script><% } %>
-    <% if (assets.app) { %><script type="text/javascript" src="/app/<%= assets.app %>"></script><% } %>
+    <% if (assets.app) { %><script type="text/javascript" src="//localhost:3000/app/<%= assets.app %>"></script><% } %>
     <% if (assets.version) { %>
     <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.vendors.<%= assets.version %>.js"></script>
     <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.<%= assets.version %>.js"></script>
@@ -40,12 +41,9 @@ export default () => {
   return (req, res) => {
     const settings = {
       AUTH0_DOMAIN: config('AUTH0_DOMAIN'),
-      BASE_URL: url.format({
-        protocol: config('NODE_ENV') !== 'production' ? 'http' : 'https',
-        host: req.get('host'),
-        pathname: url.parse(req.originalUrl || '').pathname.replace(req.path, '')
-      }),
-      BASE_PATH: url.parse(req.originalUrl || '').pathname.replace(req.path, '') + (req.path === '/admins' ? '/admins' : '')
+      BASE_URL: urlHelpers.getBaseUrl(req),
+      BASE_PATH: urlHelpers.getBasePath(req),
+      AUTH0_MANAGE_URL: config('AUTH0_MANAGE_URL') || 'http://manage.auth0.com'
     };
 
     // Render from CDN.

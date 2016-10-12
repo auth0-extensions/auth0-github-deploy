@@ -1,3 +1,4 @@
+import Alert from './Alert';
 import Confirm from './Confirm';
 import Error from './Error';
 import Json from './Json';
@@ -17,6 +18,7 @@ import TableTotals from './TableTotals';
 import TableAction from './TableAction';
 
 export {
+  Alert,
   Confirm,
   Error,
   Json,

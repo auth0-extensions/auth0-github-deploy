@@ -1,11 +1,12 @@
 import React, { PropTypes, Component } from 'react';
 import connectContainer from 'redux-static';
 
-import { configActions } from '../actions';
+import { configActions, closeNotification } from '../actions';
 import { Error } from '../components/Dashboard';
 
 import Help from '../components/Help';
 import WebhookSettings from '../components/WebhookSettings';
+import NotificationDialog from '../components/NotificationDialog';
 
 export default connectContainer(class extends Component {
   static stateToProps = (state) => ({
@@ -13,12 +14,15 @@ export default connectContainer(class extends Component {
   });
 
   static actionsToProps = {
-    ...configActions
+    ...configActions,
+    ...closeNotification
   }
 
   static propTypes = {
     config: PropTypes.object.isRequired,
-    fetchConfiguration: PropTypes.func.isRequired
+    fetchConfiguration: PropTypes.func.isRequired,
+    closeNotification: PropTypes.func.isRequired,
+    confirmNotification: PropTypes.func.isRequired,
   }
 
   componentWillMount() {
@@ -26,10 +30,11 @@ export default connectContainer(class extends Component {
   }
 
   render() {
-    const { error, record } = this.props.config.toJS();
+    const { error, record, showNotification } = this.props.config.toJS();
 
     return (
       <div>
+        <NotificationDialog show={showNotification} onClose={this.props.closeNotification} onConfirm={this.props.confirmNotification} />
         <div className="row">
           <div className="col-xs-12">
             <Error message={error} />

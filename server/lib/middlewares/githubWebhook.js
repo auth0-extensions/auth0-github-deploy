@@ -1,10 +1,10 @@
 import crypto from 'crypto';
-import { ArgumentError, UnauthorizedError } from '../errors';
+import { ArgumentError, UnauthorizedError } from 'auth0-extension-tools';
 
 const calculateSignature = (key, blob) =>
   `sha1=${crypto.createHmac('sha1', key).update(blob).digest('hex')}`;
 
-const parse = (headers, { ref = '', commits = [], head_commit = {}, repository = {}, sender = {} }) => {
+const parse = (headers, { ref = '', commits = [], head_commit = {}, repository = {}, sender = {} }) => { // eslint-disable-line camelcase
   const refParts = ref.split('/');
 
   return {
@@ -36,6 +36,6 @@ module.exports = (secret) => (req, res, next) => {
     return next(new UnauthorizedError('The GitHub webhook signature is incorrect.'));
   }
 
-  req.webhook = parse(req.headers, req.body);
+  req.webhook = parse(req.headers, req.body); // eslint-disable-line no-param-reassign
   return next();
 };

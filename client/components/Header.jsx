@@ -20,7 +20,7 @@ export default class Header extends Component {
           <div className="container">
             <div className="navbar-header">
               <h1 className="navbar-brand" style={{ paddingTop: 0 }}>
-                <a href="http://manage.auth0.com/">
+                <a href={window.config.AUTH0_MANAGE_URL}>
                   <span>Auth0</span>
                 </a>
               </h1>

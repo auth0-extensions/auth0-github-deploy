@@ -6,6 +6,8 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import rootReducer from '../reducers';
 import DevTools from '../containers/DevTools';
 
+const nextRootReducer = ((process.env.NODE_ENV !== 'production' && module.hot)) ? require('../reducers') : null;
+
 export default function configureStore() {
   const pipeline = [
     applyMiddleware(
@@ -25,9 +27,8 @@ export default function configureStore() {
   const store = finalCreateStore(rootReducer, { });
 
   // Enable Webpack hot module replacement for reducers.
-  if (process.env.NODE_ENV !== 'production' && module.hot) {
+  if (nextRootReducer) {
     module.hot.accept('../reducers', () => {
-      const nextRootReducer = require('../reducers');
       store.replaceReducer(nextRootReducer);
     });
   }

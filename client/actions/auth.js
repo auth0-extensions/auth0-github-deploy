@@ -19,7 +19,7 @@ export function loadCredentials() {
     const apiToken = sessionStorage.getItem('token');
     if (apiToken) {
       const decodedToken = jwtDecode(apiToken);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${apiToken}`;
+      axios.defaults.headers.common.Authorization = `Bearer ${apiToken}`;
 
       dispatch({
         type: constants.LOADED_TOKEN,
