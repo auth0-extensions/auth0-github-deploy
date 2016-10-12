@@ -28,7 +28,7 @@ export const deployments = createReducer(fromJS(initialState), { // eslint-disab
   [constants.FETCH_DEPLOYMENTS_REJECTED]: (state, action) =>
     state.merge({
       loading: false,
-      error: `An error occured while loading the deployments: ${(action.payload.data && action.payload.data.message) || action.payload.statusText}`
+      error: `An error occured while loading the deployments: ${action.errorMessage}`
     }),
   [constants.FETCH_DEPLOYMENTS_FULFILLED]: (state, action) => {
     const { data } = action.payload;
@@ -48,7 +48,7 @@ export const deployments = createReducer(fromJS(initialState), { // eslint-disab
   [constants.RUN_DEPLOYMENT_REJECTED]: (state, action) =>
     state.merge({
       loading: false,
-      error: `An error occured while loading the deployments: ${(action.payload.response && action.payload.response && action.payload.response.data && action.payload.response.data.message) || action.payload.message}`
+      error: `An error occured while loading the deployments: ${action.errorMessage}`
     }),
   [constants.RUN_DEPLOYMENT_FULFILLED]: (state) =>
     state.merge({

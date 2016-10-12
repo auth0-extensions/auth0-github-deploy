@@ -67,33 +67,11 @@ describe('deployments reducer', () => {
     );
   });
 
-  it('should handle FETCH_DEPLOYMENTS_REJECTED with payload data', () => {
+  it('should handle FETCH_DEPLOYMENTS_REJECTED', () => {
     expect(
       deployments(initialState, {
         type: constants.FETCH_DEPLOYMENTS_REJECTED,
-        payload: {
-          data: {
-            message: 'ERROR'
-          }
-        }
-      }).toJSON()
-    ).toEqual(
-      {
-        loading: false,
-        error: 'An error occured while loading the deployments: ERROR',
-        records: [],
-        activeRecord: null
-      }
-    );
-  });
-
-  it('should handle FETCH_DEPLOYMENTS_REJECTED without payload data', () => {
-    expect(
-      deployments(initialState, {
-        type: constants.FETCH_DEPLOYMENTS_REJECTED,
-        payload: {
-          statusText: 'ERROR'
-        }
+        errorMessage: 'ERROR'
       }).toJSON()
     ).toEqual(
       {
@@ -153,33 +131,11 @@ describe('deployments reducer', () => {
     );
   });
 
-  it('should handle RUN_DEPLOYMENT_REJECTED with payload data', () => {
+  it('should handle RUN_DEPLOYMENT_REJECTED', () => {
     expect(
       deployments(initialState, {
         type: constants.RUN_DEPLOYMENT_REJECTED,
-        payload: {
-          data: {
-            message: 'ERROR'
-          }
-        }
-      }).toJSON()
-    ).toEqual(
-      {
-        loading: false,
-        error: 'An error occured while loading the deployments: ERROR',
-        records: [],
-        activeRecord: null
-      }
-    );
-  });
-
-  it('should handle RUN_DEPLOYMENT_REJECTED without payload data', () => {
-    expect(
-      deployments(initialState, {
-        type: constants.RUN_DEPLOYMENT_REJECTED,
-        payload: {
-          statusText: 'ERROR'
-        }
+        errorMessage: 'ERROR'
       }).toJSON()
     ).toEqual(
       {

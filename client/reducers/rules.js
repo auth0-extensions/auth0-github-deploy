@@ -6,7 +6,7 @@ import createReducer from '../utils/createReducer';
 const initialState = {
   loading: false,
   error: null,
-  records: [],
+  records: {},
   showNotification: false,
   notificationType: 'success'
 };
@@ -28,8 +28,14 @@ export const rules = createReducer(fromJS(initialState), { // eslint-disable-lin
       error: null,
       records: fromJS(action.payload.data)
     }),
+  [constants.UPDATE_MANUAL_RULES_REJECTED]: (state, action) =>
+    state.merge({
+      loading: false,
+      error: `An error occured while loading the rules: ${action.errorMessage}`
+    }),
   [constants.OPEN_RULE_NOTIFICATION]: (state) =>
     state.merge({
+      error: false,
       showNotification: true
     }),
   [constants.CLOSE_RULE_NOTIFICATION]: (state) =>

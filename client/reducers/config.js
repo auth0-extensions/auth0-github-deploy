@@ -21,7 +21,7 @@ export const config = createReducer(fromJS(initialState), { // eslint-disable-li
   [constants.FETCH_CONFIGURATION_REJECTED]: (state, action) =>
     state.merge({
       loading: false,
-      error: `An error occured while loading the configuration: ${(action.payload.data && action.payload.data.message) || action.payload.statusText}`
+      error: `An error occured while loading the configuration: ${action.errorMessage}`
     }),
   [constants.FETCH_CONFIGURATION_FULFILLED]: (state, action) => {
     const { data } = action.payload;

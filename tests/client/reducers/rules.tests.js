@@ -5,7 +5,9 @@ import * as constants from '../../../client/constants';
 const initialState = {
   loading: false,
   error: null,
-  records: []
+  records: {},
+  showNotification: false,
+  notificationType: 'success'
 };
 
 describe('rules reducer', () => {
@@ -26,7 +28,9 @@ describe('rules reducer', () => {
       {
         loading: true,
         error: null,
-        records: []
+        records: {},
+        showNotification: false,
+        notificationType: 'success'
       }
     );
   });
@@ -41,7 +45,9 @@ describe('rules reducer', () => {
       {
         loading: false,
         error: 'An error occured while loading the rules: ERROR',
-        records: []
+        records: {},
+        showNotification: false,
+        notificationType: 'success'
       }
     );
   });
@@ -70,7 +76,58 @@ describe('rules reducer', () => {
             global: false,
             client_id: 'z4JBexbssw4o6mCRPRQWaxzqampwXULL'
           }
-        ]
+        ],
+        showNotification: false,
+        notificationType: 'success'
+      }
+    );
+  });
+
+  it('should handle UPDATE_MANUAL_RULES_REJECTED', () => {
+    expect(
+      rules(initialState, {
+        type: constants.UPDATE_MANUAL_RULES_REJECTED,
+        errorMessage: 'ERROR'
+      }).toJSON()
+    ).toEqual(
+      {
+        loading: false,
+        error: 'An error occured while loading the rules: ERROR',
+        records: {},
+        showNotification: false,
+        notificationType: 'success'
+      }
+    );
+  });
+
+  it('should handle OPEN_RULE_NOTIFICATION', () => {
+    expect(
+      rules(initialState, {
+        type: constants.OPEN_RULE_NOTIFICATION
+      }).toJSON()
+    ).toEqual(
+      {
+        loading: false,
+        error: false,
+        records: {},
+        showNotification: true,
+        notificationType: 'success'
+      }
+    );
+  });
+
+  it('should handle CLOSE_RULE_NOTIFICATION', () => {
+    expect(
+      rules(initialState, {
+        type: constants.CLOSE_RULE_NOTIFICATION
+      }).toJSON()
+    ).toEqual(
+      {
+        loading: false,
+        error: null,
+        records: {},
+        showNotification: false,
+        notificationType: 'success'
       }
     );
   });
