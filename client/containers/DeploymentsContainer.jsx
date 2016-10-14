@@ -31,7 +31,8 @@ export default connectContainer(class extends Component {
 
   runDeployment = (sha) => {
     this.props.runDeployment(sha)
-      .then(() => this.props.fetchDeployments());
+      .then(() => this.props.fetchDeployments())
+      .catch(() => this.props.fetchDeployments());
   }
 
   render() {
@@ -44,10 +45,10 @@ export default connectContainer(class extends Component {
             <div className="col-xs-12">
               <ButtonToolbar className="pull-right">
                 <Button bsSize="small" className="btn-primary" onClick={() => this.runDeployment()}>
-                  <i className="icon icon-budicon-356"></i> Deploy
+                  <i className="icon icon-budicon-356" /> Deploy
                 </Button>
                 <Button bsSize="small" className="btn-default" onClick={this.props.fetchDeployments}>
-                  <i className="icon icon-budicon-257"></i> Reload
+                  <i className="icon icon-budicon-257" /> Reload
                 </Button>
               </ButtonToolbar>
             </div>

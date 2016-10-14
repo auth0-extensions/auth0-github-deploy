@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Button, ButtonToolbar, Modal } from 'react-bootstrap';
 
 class Alert extends Component {
+  static defaultProps = {
+    type: 'success'
+  }
 
   render() {
     const showAlert = this.props.show;
@@ -10,10 +13,8 @@ class Alert extends Component {
       return null;
     }
     return (
-      <div className="alert alert-success">
-        <button onClick={this.props.onClose}
-                type="button"
-                className="close"><span>&times;</span></button>
+      <div className={`alert alert-${this.props.type}`}>
+        <button onClick={this.props.onClose} type="button" className="close"><span>&times;</span></button>
         {children}
       </div>
     );
@@ -23,7 +24,7 @@ class Alert extends Component {
 Alert.propTypes = {
   show: React.PropTypes.bool.isRequired,
   type: React.PropTypes.string.isRequired,
-  onClose: React.PropTypes.func.required
+  onClose: React.PropTypes.func.isRequired
 };
 
 export default Alert;
