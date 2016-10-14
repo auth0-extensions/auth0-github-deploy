@@ -62,6 +62,9 @@ export default class RulesTable extends Component {
         <Alert show={this.props.showNotification} onClose={this.props.closeNotification} type={this.props.notificationType}>
           Manual rules have been saved.
         </Alert>
+        <p>
+          Rules that are flagged as manual rules will not be deleted, but any changes to metadata (order/status) will still be applied.
+        </p>
         <Table>
           <TableHeader>
             <TableColumn width="80%">Name</TableColumn>
