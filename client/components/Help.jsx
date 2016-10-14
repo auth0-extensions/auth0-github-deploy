@@ -6,7 +6,7 @@ export default class Help extends Component {
       <div>
         <h5>Usage</h5>
         <p>
-          Rules and Database Connection scripts can automatically be deployed from a GitHub repository to an Auth0 account by using a specific convention.
+          Pages, Rules and Database Connection scripts can automatically be deployed from a GitHub repository to an Auth0 account by using a specific convention.
           The details are available in <a href="https://github.com/auth0-samples/github-source-control-integration">a repository with sample scripts</a>.
         </p>
       </div>
