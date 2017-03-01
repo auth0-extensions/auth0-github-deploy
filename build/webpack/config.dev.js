@@ -12,11 +12,11 @@ const config = require('./config.base.js');
 config.devtool = 'eval-source-map';
 config.debug = true;
 config.entry = [
-  'webpack-dev-server/client?http://' + WEBPACK_HOST + ':' + WEBPACK_PORT,
+  `webpack-dev-server/client?http://${WEBPACK_HOST}:${WEBPACK_PORT}`,
   'webpack/hot/only-dev-server',
   config.entry.app
 ];
-config.output.publicPath = 'http://localhost:3000' + config.output.publicPath;
+config.output.publicPath = `http://localhost:3000${config.output.publicPath}`;
 
 // Stats configuration.
 config.stats = {

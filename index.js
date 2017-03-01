@@ -15,6 +15,7 @@ nconf
   .env()
   .file(path.join(__dirname, './server/config.json'))
   .defaults({
+    AUTH0_RTA: 'https://auth0.auth0.com',
     NODE_ENV: 'development',
     HOSTING_ENV: 'default',
     PORT: 3001,

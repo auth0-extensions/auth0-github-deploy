@@ -11,9 +11,14 @@ const options = {
   hot: true,
   inline: true,
   historyApiFallback: true,
-  proxy: {
-    '*': 'http://localhost:3001'
-  },
+  proxy: [
+    {
+      context: () => true,
+      target: {
+        port: 3001
+      }
+    }
+  ],
 
   quiet: false,
   noInfo: true,
@@ -23,7 +28,9 @@ const options = {
   },
 
   stats: { colors: true },
-  headers: { 'Access-Control-Allow-Origin': '*' }
+  headers: { 
+    'Access-Control-Allow-Origin': '*' 
+  }
 };
 
 new WebpackDevServer(webpack(config), options)

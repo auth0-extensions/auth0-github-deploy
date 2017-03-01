@@ -86,8 +86,7 @@ module.exports = {
   ],
 
   // Postcss configuration.
-  postcss: () => {
-    return [
+  postcss: () => [
       require('postcss-simple-vars')(),
       require('postcss-focus')(),
       require('autoprefixer')({
@@ -96,6 +95,5 @@ module.exports = {
       require('postcss-reporter')({
         clearMessages: true
       })
-    ];
-  }
+    ]
 };
