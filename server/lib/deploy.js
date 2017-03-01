@@ -1,4 +1,5 @@
 import { deploy as sourceDeploy } from 'auth0-source-control-extension-tools';
+
 import config from '../lib/config';
 import { getChanges } from './github';
 

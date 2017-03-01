@@ -29,7 +29,6 @@ module.exports = (configProvider, storageProvider) => {
   }));
   app.use(bodyParser.urlencoded({ extended: false }));
 
-  
   // Configure authentication.
   app.use(routes.dashboardAdmins({
     secret: config('EXTENSION_SECRET'),
