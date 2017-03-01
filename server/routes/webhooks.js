@@ -1,4 +1,5 @@
 import express from 'express';
+import { middlewares } from 'auth0-extension-express-tools';
 
 import config from '../lib/config';
 import deploy from '../lib/deploy';
@@ -11,6 +12,11 @@ export default (storage) => {
   const githubSecret = config('EXTENSION_SECRET');
 
   const webhooks = express.Router(); // eslint-disable-line new-cap
+  webhooks.use(middlewares.managementApiClient({
+    domain: config('AUTH0_DOMAIN'),
+    clientId: config('AUTH0_CLIENT_ID'),
+    clientSecret: config('AUTH0_CLIENT_SECRET')
+  }));
   webhooks.post('/deploy', githubWebhook(githubSecret), (req, res, next) => {
     const { id, branch, commits, repository, user, sha } = req.webhook;
 

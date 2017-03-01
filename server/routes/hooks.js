@@ -6,6 +6,11 @@ import logger from '../lib/logger';
 
 export default () => {
   const hooks = router();
+  hooks.use(middlewares.managementApiClient({
+    domain: config('AUTH0_DOMAIN'),
+    clientId: config('AUTH0_CLIENT_ID'),
+    clientSecret: config('AUTH0_CLIENT_SECRET')
+  }));
   const hookValidator = middlewares
     .validateHookToken(config('AUTH0_DOMAIN'), config('WT_URL'), config('EXTENSION_SECRET'));
 
@@ -21,7 +26,7 @@ export default () => {
       .catch((err) => {
         logger.debug(`Error deleting client: ${config('AUTH0_CLIENT_ID')}`);
         logger.error(err);
-        
+
         // Even if deleting fails, we need to be able to uninstall the extension.
         res.sendStatus(204);
       });
