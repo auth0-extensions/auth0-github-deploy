@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import { ArgumentError, UnauthorizedError } from 'auth0-extension-tools';
 
+import logger from '../logger';
+
 const calculateSignature = (key, blob) =>
   `sha1=${crypto.createHmac('sha1', key).update(blob).digest('hex')}`;
 
@@ -33,6 +35,7 @@ module.exports = (secret) => (req, res, next) => {
 
   const signature = calculateSignature(secret, req.rawBody);
   if (signature !== req.headers['x-hub-signature']) {
+    logger.error(`Signature "${req.headers['x-hub-signature']}" does not match rawBody: ${JSON.stringify(req.rawBody, null, 2)}`);
     return next(new UnauthorizedError('The GitHub webhook signature is incorrect.'));
   }
 
