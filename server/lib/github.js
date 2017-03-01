@@ -18,13 +18,13 @@ file.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
  * Check if a file is part of the database folder.
  */
 const isDatabaseConnection = (file) =>
-file.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+  file.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the pages folder.
  */
 const isPage = (file) =>
-file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
+  file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
  * Get the details of a database file script.
