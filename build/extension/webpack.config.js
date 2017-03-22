@@ -58,7 +58,6 @@ module.exports = externalModules.then((externals) => {
     } else {
       externals.compatible[k] = `commonjs ${externals.compatible[k]}`;
     }
-    console.log('External:', externals.compatible[k]);
   });
 
   return {
@@ -76,7 +75,10 @@ module.exports = externalModules.then((externals) => {
         {
           test: /\.jsx?$/,
           loader: 'babel',
-          exclude: path.join(__dirname, '../../node_modules/')
+          exclude(modulePath) {
+            return /node_modules/.test(modulePath) &&
+              !/node_modules\/express-conditional-middleware/.test(modulePath);
+          }
         },
         { test: /\.json$/, loader: 'json' }
       ]
