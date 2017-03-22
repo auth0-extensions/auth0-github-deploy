@@ -30,6 +30,9 @@ module.exports = (configProvider, storageProvider) => {
   app.use(bodyParser.urlencoded({ extended: false }));
 
   // Configure authentication.
+  app.get('/login', (req, res) => {
+    res.redirect('/admins/login');
+  });
   app.use(routes.dashboardAdmins({
     secret: config('EXTENSION_SECRET'),
     audience: 'urn:github-deploy',

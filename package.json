@@ -1,6 +1,6 @@
 {
   "name": "auth0-github-deploy-extension",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Auth0 GitHub Deployment Extension",
   "engines": {
     "node": "5.9.0"
