@@ -40,6 +40,7 @@ module.exports = externalModules.then((externals) => {
 
   // Additional dependencies that are available in webtask.
   externals.compatible.auth0 = 'auth0@2.4.0';
+  externals.compatible['auth0-extension-tools'] = 'auth0-extension-tools@1.2.1';
   externals.compatible['lru-memoizer'] = 'lru-memoizer@1.10.0';
   externals.compatible.nconf = true;
   externals.compatible['node-uuid'] = true;
