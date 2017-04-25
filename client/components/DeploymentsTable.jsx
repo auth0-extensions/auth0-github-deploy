@@ -50,7 +50,7 @@ export default class DeploymentsTable extends Component {
                         onClick={() => this.props.showLogs(record)}
                       />
                       <TableAction
-                        id={`view-${index}`} type="success" title={`Re-deploy ${record.sha}`} icon="356"
+                        id={`view-${index}`} type="default" title={`Re-deploy ${record.sha}`} icon="356"
                         onClick={() => this.props.deployChange(record.sha)}
                       />
                     </ButtonToolbar>

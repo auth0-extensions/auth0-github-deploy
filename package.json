@@ -1,6 +1,6 @@
 {
   "name": "auth0-github-deploy-extension",
-  "version": "2.1.6",
+  "version": "2.2.0",
   "description": "Auth0 GitHub Deployment Extension",
   "engines": {
     "node": "5.9.0"
@@ -68,6 +68,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.0",
     "react-redux": "^4.4.6",
+    "react-router": "2.8.1",
     "redux": "^3.6.0",
     "redux-logger": "^2.6.1",
     "redux-promise-middleware": "^4.1.0",
