@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, TableBody, TableCell, TableTextCell, TableHeader, TableColumn, TableRow, Alert } from './Dashboard';
+import { Table, TableBody, TableCell, TableTextCell, TableHeader, TableColumn, TableRow, Alert } from 'auth0-extension-ui';
 
 export default class RulesTable extends Component {
   static propTypes = {
@@ -37,13 +37,11 @@ export default class RulesTable extends Component {
       }
     });
 
-    if (manualRules.length > 0) {
-      this.props.saveManualRules({ names: manualRules })
-        .then(() => {
-          this.props.openNotification();
-          setTimeout(this.props.closeNotification, 10000);
-        });
-    }
+    this.props.saveManualRules({ names: manualRules })
+      .then(() => {
+        this.props.openNotification();
+        setTimeout(this.props.closeNotification, 10000);
+      });
   }
 
   toArray(rulesMap) {
@@ -59,9 +57,12 @@ export default class RulesTable extends Component {
 
     return (
       <div>
-        <Alert show={this.props.showNotification} onClose={this.props.closeNotification} type={this.props.notificationType}>
-          Manual rules have been saved.
-        </Alert>
+        <Alert
+          show={this.props.showNotification}
+          onDismiss={this.props.closeNotification}
+          type={this.props.notificationType}
+          message="Manual rules have been saved."
+        />
         <p>
           Rules that are flagged as manual rules will not be deleted, but any changes to metadata (order/status) will still be applied.
         </p>

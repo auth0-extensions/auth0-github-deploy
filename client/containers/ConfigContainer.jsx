@@ -1,8 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import connectContainer from 'redux-static';
+import { Error } from 'auth0-extension-ui';
 
 import { configActions, closeNotification } from '../actions';
-import { Error } from '../components/Dashboard';
 
 import Help from '../components/Help';
 import WebhookSettings from '../components/WebhookSettings';

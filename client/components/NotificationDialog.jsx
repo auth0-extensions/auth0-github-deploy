@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { Alert, Confirm } from './Dashboard';
+import { Confirm } from 'auth0-extension-ui';
 
 export default class NotificationDialog extends Component {
   static propTypes = {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ButtonToolbar } from 'react-bootstrap';
-import { Table, TableAction, TableCell, TableBody, TableIconCell, TableTextCell, TableHeader, TableColumn, TableRow } from './Dashboard';
+import { Table, TableAction, TableCell, TableBody, TableIconCell, TableTextCell, TableHeader, TableColumn, TableRow } from 'auth0-extension-ui';
 
 export default class DeploymentsTable extends Component {
   static propTypes = {
