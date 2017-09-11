@@ -94,7 +94,9 @@ const getTree = (repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
       const github = new GitHubApi({
-        version: '3.0.0'
+        version: '3.0.0',
+        host: config('GITHUB_HOST') || 'api.github.com',
+        pathPrefix: config('GITHUB_API_PATH') || ''
       });
       github.authenticate({
         type: 'oauth',
@@ -127,7 +129,7 @@ const getTree = (repository, branch, sha) =>
  */
 const downloadFile = (repository, branch, file) => {
   const token = config('GITHUB_TOKEN');
-  const url = `https://${token}:x-oauth-basic@api.github.com/repos/${repository}/git/blobs/${file.sha}`;
+  const url = `https://${token}:x-oauth-basic@${config('GITHUB_HOST')}/repos/${repository}/git/blobs/${file.sha}`;
 
   return request({ uri: url, json: true, headers: { 'user-agent': 'auth0-github-deploy' } })
     .then(blob => {
@@ -139,7 +141,7 @@ const downloadFile = (repository, branch, file) => {
       };
     })
     .catch(err => {
-      logger.error(`Error downloading 'api.github.com/repos/${repository}/git/blobs/${file.sha}'`);
+      logger.error(`Error downloading '${config('GITHUB_HOST')}/repos/${repository}/git/blobs/${file.sha}'`);
       logger.error(err);
 
       throw err;

@@ -31,6 +31,14 @@
       "default": "master",
       "required": true
     },
+    "GITHUB_HOST": {
+      "description": "Host of the GitHub instance (should be api.github.com for GitHub)",
+      "default": "api.github.com",
+      "required": true
+    },
+    "GITHUB_API_PATH": {
+      "description": "GitHub API path prefix (should be empty for GitHub)"
+    },
     "GITHUB_TOKEN": {
       "description": "Your personal access token for GitHub",
       "required": true,
