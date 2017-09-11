@@ -37,7 +37,7 @@
       "required": true
     },
     "GITHUB_API_PATH": {
-      "description": "GitHub API path prefix (should be empty for GitHub)"
+      "description": "GitHub API path prefix (should be empty for GitHub or '/api/v3' for GHE by default)"
     },
     "GITHUB_TOKEN": {
       "description": "Your personal access token for GitHub",
