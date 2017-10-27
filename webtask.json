@@ -32,11 +32,11 @@
       "required": true
     },
     "GITHUB_HOST": {
-      "description": "Host of GitHub Enterprise instance, leave empty to use github.com",
-      "example": "api.github.com"
+      "description": "GitHub Enterprise host, leave empty for github.com",
+      "example": "github.my-company.com"
     },
     "GITHUB_API_PATH": {
-      "description": "GitHub API path prefix (should be empty for GitHub and GHE by default)",
+      "description": "GitHub Enterprise API path prefix, leave empty for github.com",
       "example": "/api/v3"
     },
     "GITHUB_TOKEN": {

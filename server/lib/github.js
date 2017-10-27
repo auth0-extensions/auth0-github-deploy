@@ -93,10 +93,12 @@ const parseRepo = (repository = '') => {
 const getTree = (repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
+      const host = config('GITHUB_HOST') || 'api.github.com';
+      const pathPrefix = host !== 'api.github.com' ? config('GITHUB_API_PATH') || '/api/v3' : '';
       const github = new GitHubApi({
         version: '3.0.0',
-        host: config('GITHUB_HOST') || 'api.github.com',
-        pathPrefix: config('GITHUB_HOST') ? config('GITHUB_API_PATH') || '/api/v3' : ''
+        host,
+        pathPrefix
       });
       github.authenticate({
         type: 'oauth',
@@ -130,7 +132,7 @@ const getTree = (repository, branch, sha) =>
 const downloadFile = (repository, branch, file) => {
   const token = config('GITHUB_TOKEN');
   const host = config('GITHUB_HOST') || 'api.github.com';
-  const pathPrefix = config('GITHUB_HOST') ? config('GITHUB_API_PATH') || '/api/v3' : '';
+  const pathPrefix = host !== 'api.github.com' ? config('GITHUB_API_PATH') || '/api/v3' : '';
   const url = `https://${token}:x-oauth-basic@${host}${pathPrefix}/repos/${repository}/git/blobs/${file.sha}`;
 
   return request({ uri: url, json: true, headers: { 'user-agent': 'auth0-github-deploy' } })
