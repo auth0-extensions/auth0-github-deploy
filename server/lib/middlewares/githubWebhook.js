@@ -4,7 +4,7 @@ import { ArgumentError, UnauthorizedError } from 'auth0-extension-tools';
 import logger from '../logger';
 
 const calculateSignature = (key, blob) =>
-  `sha1=${crypto.createHmac('sha1', key).update(blob).digest('hex')}`;
+  `sha1=${crypto.createHmac('sha1', key).update(new Buffer(blob, 'utf-8')).digest('hex')}`;
 
 const parse = (headers, { ref = '', commits = [], head_commit = {}, repository = {}, sender = {} }) => { // eslint-disable-line camelcase
   const refParts = ref.split('/');
