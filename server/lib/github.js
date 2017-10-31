@@ -93,8 +93,12 @@ const parseRepo = (repository = '') => {
 const getTree = (repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
+      const host = config('GITHUB_HOST') || 'api.github.com';
+      const pathPrefix = host !== 'api.github.com' ? config('GITHUB_API_PATH') || '/api/v3' : '';
       const github = new GitHubApi({
-        version: '3.0.0'
+        version: '3.0.0',
+        host,
+        pathPrefix
       });
       github.authenticate({
         type: 'oauth',
@@ -127,7 +131,9 @@ const getTree = (repository, branch, sha) =>
  */
 const downloadFile = (repository, branch, file) => {
   const token = config('GITHUB_TOKEN');
-  const url = `https://${token}:x-oauth-basic@api.github.com/repos/${repository}/git/blobs/${file.sha}`;
+  const host = config('GITHUB_HOST') || 'api.github.com';
+  const pathPrefix = host !== 'api.github.com' ? config('GITHUB_API_PATH') || '/api/v3' : '';
+  const url = `https://${token}:x-oauth-basic@${host}${pathPrefix}/repos/${repository}/git/blobs/${file.sha}`;
 
   return request({ uri: url, json: true, headers: { 'user-agent': 'auth0-github-deploy' } })
     .then(blob => {
@@ -139,7 +145,7 @@ const downloadFile = (repository, branch, file) => {
       };
     })
     .catch(err => {
-      logger.error(`Error downloading 'api.github.com/repos/${repository}/git/blobs/${file.sha}'`);
+      logger.error(`Error downloading '${host}${pathPrefix}/repos/${repository}/git/blobs/${file.sha}'`);
       logger.error(err);
 
       throw err;
