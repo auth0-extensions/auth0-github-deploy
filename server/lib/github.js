@@ -93,6 +93,10 @@ const parseRepo = (repository = '') => {
 const getTree = (repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
+      console.log('Repository: ', repository);
+      console.log('Branch: ', branch);
+      console.log('Sha: ', sha);
+
       const host = config('GITHUB_HOST') || 'api.github.com';
       const pathPrefix = host !== 'api.github.com' ? config('GITHUB_API_PATH') || '/api/v3' : '';
       const github = new GitHubApi({
@@ -122,6 +126,7 @@ const getTree = (repository, branch, sha) =>
           }
         });
     } catch (e) {
+      console.log(e);
       reject(e);
     }
   });

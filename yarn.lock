@@ -340,11 +340,11 @@ auth0-oauth2-express@^1.1.8:
     jsonwebtoken "^5.0.1"
     superagent "^1.2.0"
 
-auth0-source-control-extension-tools@2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-2.5.1.tgz#7822790ae0d243a123a078d8d20473978baff992"
+auth0-source-control-extension-tools@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-2.6.1.tgz#c59f3a6a319fc14c482213e94c7c08819e12d31f"
   dependencies:
-    auth0 "^2.7.0"
+    auth0 "^2.9.0"
     auth0-extension-tools "^0.14.0"
     auth0-oauth2-express "^1.1.8"
     bluebird "^3.4.6"
@@ -362,7 +362,7 @@ auth0@^2.3.1:
     rest-facade "^1.2.7"
     url-join "0.0.1"
 
-auth0@^2.7.0, auth0@^2.8.0:
+auth0@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.8.0.tgz#cd3c4aa78a433c1c9ca2f4c29cfc8f9baf09af13"
   dependencies:
@@ -371,6 +371,17 @@ auth0@^2.7.0, auth0@^2.8.0:
     object.assign "^4.0.4"
     request "^2.83.0"
     rest-facade "^1.5.0"
+
+auth0@^2.9.0:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/auth0/-/auth0-2.9.1.tgz#85e088035f29925ed086da94d811288a65f5835c"
+  dependencies:
+    bluebird "^2.10.2"
+    lru-memoizer "^1.11.1"
+    object.assign "^4.0.4"
+    request "^2.83.0"
+    rest-facade "^1.10.0"
+    retry "^0.10.1"
 
 autoprefixer@6.7.7, autoprefixer@^6.3.1:
   version "6.7.7"
@@ -6285,6 +6296,16 @@ resolve@^1.1.6, resolve@^1.1.7:
   dependencies:
     path-parse "^1.0.5"
 
+rest-facade@^1.10.0:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/rest-facade/-/rest-facade-1.10.1.tgz#a9b030ff50df28c9ea1a2719f94e369c47167d20"
+  dependencies:
+    bluebird "^2.10.2"
+    change-case "^2.3.0"
+    deepmerge "^1.5.1"
+    superagent "^3.8.0"
+    superagent-proxy "^1.0.2"
+
 rest-facade@^1.2.7:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/rest-facade/-/rest-facade-1.4.1.tgz#c9b87a4ddf04d95fc5a8acf0f1341561cacee4a2"
@@ -6310,7 +6331,7 @@ restore-cursor@^1.0.1:
     exit-hook "^1.0.0"
     onetime "^1.0.0"
 
-retry@^0.10.0:
+retry@^0.10.0, retry@^0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.10.1.tgz#e76388d217992c252750241d3d3956fed98d8ff4"
 
@@ -6815,6 +6836,21 @@ superagent@^2.2.0:
 superagent@^3.5.2:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/superagent/-/superagent-3.8.0.tgz#87e3ed536c8860c08c7c7d1225da9a80cab064c6"
+  dependencies:
+    component-emitter "^1.2.0"
+    cookiejar "^2.1.0"
+    debug "^3.1.0"
+    extend "^3.0.0"
+    form-data "^2.3.1"
+    formidable "^1.1.1"
+    methods "^1.1.1"
+    mime "^1.4.1"
+    qs "^6.5.1"
+    readable-stream "^2.0.5"
+
+superagent@^3.8.0:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/superagent/-/superagent-3.8.2.tgz#e4a11b9d047f7d3efeb3bbe536d9ec0021d16403"
   dependencies:
     component-emitter "^1.2.0"
     cookiejar "^2.1.0"
