@@ -340,9 +340,9 @@ auth0-oauth2-express@^1.1.8:
     jsonwebtoken "^5.0.1"
     superagent "^1.2.0"
 
-auth0-source-control-extension-tools@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-2.6.1.tgz#c59f3a6a319fc14c482213e94c7c08819e12d31f"
+auth0-source-control-extension-tools@^2.6.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/auth0-source-control-extension-tools/-/auth0-source-control-extension-tools-2.6.2.tgz#665e2fd6e9c0c9fcfc8ea115db3fd38990d26a0d"
   dependencies:
     auth0 "^2.9.0"
     auth0-extension-tools "^0.14.0"
