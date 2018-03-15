@@ -2,6 +2,82 @@
 
 This extension makes it possible to deploy Rules and Database Connection scripts from GitHub to Auth0.
 
+## Usage
+There is more extensive documentation online for how the files are expected to be laid out to work with the source control configuration utilities [here](https://auth0.com/docs/extensions/github-deploy).
+
+#### Organize your repository
+
+Here is a simple overview:
+
+```
+repository =>
+  clients
+    client1-name.json
+    client1-name.meta.json # if specifying client grants
+    my-other-client-name.json
+  resource-servers
+    resource server 1.json
+    some other resource server.json
+  database-connections
+    my-connection-name
+      get_user.js
+      login.js
+  rules-configs
+    some-config.json
+    some-secret.json
+  rules
+    rule1.js
+    rule1.json
+    rule2.js
+  pages
+    login.html
+    login.json
+    password_reset.html
+    password_reset.json
+```
+
+##### Clients
+The name of the file is the name of the client that is created or updated.
+
+In the .json file you can put the same json you would put when using the Management API for creating clients.  It will only try to keep the fields specified inline with what is configured already.  If a client doesn't exist yet, it will create it.
+
+To specify client grants, you must specify the following in the metadata file.  (e.g. client1-name.meta.json)
+
+```
+{
+  "grants": {
+    "Resource server audience": [
+      "scope1",
+      "scope2"
+    ]
+  }
+}
+```
+
+##### Resource servers
+The name of the file is the name of the resource server that is created or updated.
+
+In the .json file you can put the same json you would put when using the Management API for creating resource servers.  It will only try to keep the fields specified inline with what is configured already.  If a resource server doesn't exist yet, it will create it.
+
+##### Database Connections
+See Database Connection configuration [here](https://auth0.com/docs/extensions/github-deploy#deploy-database-connection-scripts)
+
+##### Rules Configs
+In the .json file you can define value for rule-config, while filename is a key:
+```
+{
+  "value": "some-secret-value"
+}
+```
+
+##### Rules
+See Rules configuration [here](https://auth0.com/docs/extensions/github-deploy#deploy-rules)
+
+NOTE: There is not currently a way to mark rules as manual yet, that will become part of the configuration file in the future.
+
+##### Custom Pages
+See Custom Pages configuration [here](https://auth0.com/docs/extensions/github-deploy#deploy-hosted-pages)
+
 ## Running
 
 ### Local Development

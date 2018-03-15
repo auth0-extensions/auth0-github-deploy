@@ -27,6 +27,12 @@ const isPage = (file) =>
   file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
 
 /*
+ * Check if a file is part of configurable folder.
+ */
+const isConfigurable = (file, directory) =>
+  file.indexOf(`${directory}/`) === 0;
+
+/*
  * Get the details of a database file script.
  */
 const getDatabaseScriptDetails = (filename) => {
@@ -51,6 +57,12 @@ const validFilesOnly = (fileName) => {
   if (isPage(fileName)) {
     return true;
   } else if (isRule(fileName)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.CLIENTS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.RESOURCE_SERVERS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.RULES_CONFIGS_DIRECTORY)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isDatabaseConnection(fileName)) {
     const script = getDatabaseScriptDetails(fileName);
@@ -293,6 +305,34 @@ const downloadPage = (repository, branch, pageName, page, shaToken) => {
 };
 
 /*
+ * Download a single configurable file.
+ */
+const downloadConfigurable = (repository, branch, itemName, item) => {
+  const downloads = [];
+  const currentItem = {
+    metadata: false,
+    name: itemName
+  };
+
+  if (item.configFile) {
+    downloads.push(downloadFile(repository, branch, item.configFile)
+      .then(file => {
+        currentItem.configFile = file.contents;
+      }));
+  }
+
+  if (item.metadataFile) {
+    downloads.push(downloadFile(repository, branch, item.metadataFile)
+      .then(file => {
+        currentItem.metadata = true;
+        currentItem.metadataFile = file.contents;
+      }));
+  }
+
+  return Promise.all(downloads).then(() => currentItem);
+};
+
+/*
  * Get all pages.
  */
 const getPages = (repository, branch, files, shaToken) => {
@@ -320,6 +360,42 @@ const getPages = (repository, branch, files, shaToken) => {
 };
 
 /*
+ * Get all configurables (resource servers / clients).
+ */
+const getConfigurables = (repository, branch, files, directory) => {
+  const configurables = {};
+
+  // Determine if we have the script, the metadata or both.
+  _.filter(files, f => isConfigurable(f.path, directory)).forEach(file => {
+    let meta = false;
+    let name = path.parse(file.path).name;
+    const ext = path.parse(file.path).ext;
+
+    if (ext === '.json') {
+      if (name.endsWith('.meta')) {
+        name = path.parse(name).name;
+        meta = true;
+      }
+
+      /* Initialize object if needed */
+      configurables[name] = configurables[name] || {};
+
+      if (meta) {
+        configurables[name].metadataFile = file;
+      } else {
+        configurables[name].configFile = file;
+      }
+
+      configurables[name].sha = file.sha;
+      configurables[name].path = file.path;
+    }
+  });
+
+  return Promise.map(Object.keys(configurables), (key) =>
+    downloadConfigurable(repository, branch, key, configurables[key]), { concurrency: 2 });
+};
+
+/*
  * Get a list of all changes that need to be applied to rules and database scripts.
  */
 export const getChanges = (repository, branch, sha) =>
@@ -332,14 +408,20 @@ export const getChanges = (repository, branch, sha) =>
 
       const promises = {
         rules: getRules(repository, branch, files),
+        pages: getPages(repository, branch, files),
+        clients: getConfigurables(repository, branch, files, constants.CLIENTS_DIRECTORY),
         databases: getDatabaseScripts(repository, branch, files),
-        pages: getPages(repository, branch, files)
+        ruleConfigs: getConfigurables(repository, branch, files, constants.RULES_CONFIGS_DIRECTORY),
+        resourceServers: getConfigurables(repository, branch, files, constants.RESOURCE_SERVERS_DIRECTORY)
       };
 
       return Promise.props(promises)
         .then((result) => ({
           rules: unifyScripts(result.rules),
           databases: unifyDatabases(result.databases),
-          pages: unifyScripts(result.pages)
+          pages: unifyScripts(result.pages),
+          clients: unifyScripts(result.clients),
+          ruleConfigs: unifyScripts(result.ruleConfigs),
+          resourceServers: unifyScripts(result.resourceServers)
         }));
     });

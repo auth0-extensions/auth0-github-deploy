@@ -10,7 +10,10 @@ export default (storage, id, branch, repository, sha, user, client) => {
       .then(data => {
         context.pages = data.pages;
         context.rules = data.rules;
+        context.clients = data.clients;
         context.databases = data.databases;
+        context.ruleConfigs = data.ruleConfigs;
+        context.resourceServers = data.resourceServers;
       })
   };
 
