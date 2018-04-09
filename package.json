@@ -1,6 +1,6 @@
 {
   "name": "auth0-github-deploy-extension",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "Auth0 GitHub Deployment Extension",
   "engines": {
     "node": "5.9.0"
@@ -36,7 +36,7 @@
     "auth0-extension-tools": "1.2.1",
     "auth0-extension-ui": "^1.0.1",
     "auth0-oauth2-express": "^1.1.8",
-    "auth0-source-control-extension-tools": "^2.7.0",
+    "auth0-source-control-extension-tools": "^2.7.1",
     "axios": "^0.15.0",
     "babel": "^6.5.2",
     "babel-core": "^6.9.1",
