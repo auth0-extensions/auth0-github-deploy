@@ -7,12 +7,13 @@ const calculateSignature = (key, blob) =>
   `sha1=${crypto.createHmac('sha1', key).update(new Buffer(blob, 'utf-8')).digest('hex')}`;
 
 const parse = (headers, { ref = '', commits = [], head_commit = {}, repository = {}, sender = {} }) => { // eslint-disable-line camelcase
-  const refParts = ref.split('/');
+  // If the ref starts with "refs/heads/", strip it
+  const branch = ref.replace(/^refs\/heads\//i, '');
 
   return {
     id: headers['x-github-delivery'],
     event: headers['x-github-event'],
-    branch: refParts.length === 3 ? refParts[2] : '',
+    branch,
     commits,
     repository: repository.full_name,
     user: sender.login,
