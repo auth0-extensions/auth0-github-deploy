@@ -22,7 +22,7 @@ export default class DeploymentLogsDialog extends Component {
           <Modal.Title>{id} - <span>{date_relative}</span></Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <pre>{logs.map(log => `${log.date} - ${log.message}\n`)}</pre>
+          <pre>{JSON.stringify(logs, null, ' ')}</pre>
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>
