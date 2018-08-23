@@ -59,6 +59,39 @@ describe('github Webhook', () => {
     });
   });
 
+  it('should update req.webhook with branch for ref of refs/heads/*', (done) => {
+    const webhook = githubWebhook('secret');
+    const req = {
+      headers: { 'x-github-delivery': 'id', 'x-github-event': 'event', 'x-hub-signature': 'sha1=091486123ad57d92919ee0d9d68444504eb7e2cd' },
+      body: {
+        ref: 'refs/heads/foo/bar'
+      },
+      rawBody: 'someRawBody'
+    };
+
+    webhook(req, {}, () => {
+      expect(req.webhook).toBeA(Object);
+      expect(req.webhook.branch).toEqual('foo/bar');
+      done();
+    });
+  });
+
+  it('should update req.webhook with branch for ref that does not start with refs/heads/', (done) => {
+    const webhook = githubWebhook('secret');
+    const req = {
+      headers: { 'x-github-delivery': 'id', 'x-github-event': 'event', 'x-hub-signature': 'sha1=091486123ad57d92919ee0d9d68444504eb7e2cd' },
+      body: {
+        ref: 'foo/bar'
+      },
+      rawBody: 'someRawBody'
+    };
+
+    webhook(req, {}, () => {
+      expect(req.webhook).toBeA(Object);
+      expect(req.webhook.branch).toEqual('foo/bar');
+      done();
+    });
+  });
 
   it('should work correctly with utf-8 characters in rawBody', (done) => {
     const webhook = githubWebhook('secret');
