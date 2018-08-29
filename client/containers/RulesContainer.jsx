@@ -4,7 +4,7 @@ import { Error, LoadingPanel } from 'auth0-extension-ui';
 
 import { ruleActions } from '../actions';
 
-import RulesTable from '../components/RulesTable';
+import ConfigurationTable from '../components/ConfigurationTable';
 
 export default connectContainer(class extends Component {
   static stateToProps = (state) => ({
@@ -41,11 +41,12 @@ export default connectContainer(class extends Component {
           <div className="row">
             <div className="col-xs-12">
               <Error message={error} />
-              <RulesTable
-                rules={rules}
+              <ConfigurationTable
+                type="Rules"
+                items={rules}
                 loading={loading}
                 error={error}
-                saveManualRules={this.props.updateRules}
+                saveManualItems={this.props.updateRules}
                 openNotification={this.props.openNotification}
                 closeNotification={this.props.closeNotification}
                 showNotification={this.props.showNotification}

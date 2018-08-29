@@ -43,7 +43,37 @@ module.exports = (configProvider, storageProvider) => {
     clientName: 'GitHub Deploy Extension',
     urlPrefix: '/admins',
     sessionStorageKey: 'github-deploy:apiToken',
-    scopes: 'read:tenant_settings update:tenant_settings create:clients read:clients update:clients read:client_grants create:client_grants update:client_grants read:connections update:connections read:rules create:rules update:rules delete:rules delete:clients read:resource_servers create:resource_servers update:resource_servers read:rules_configs delete:rules_configs update:rules_configs'
+    scopes: [
+      'read:tenant_settings',
+      'update:tenant_settings',
+      'create:clients',
+      'read:clients',
+      'update:clients',
+      'create:client_grants',
+      'read:client_grants',
+      'update:client_grants',
+      'create:connections',
+      'read:connections',
+      'update:connections',
+      'read:rules',
+      'create:rules',
+      'update:rules',
+      'delete:rules',
+      'delete:clients',
+      'read:resource_servers',
+      'create:resource_servers',
+      'update:resource_servers',
+      'delete:resource_servers',
+      'read:rules_configs',
+      'delete:rules_configs',
+      'update:rules_configs',
+      'create:email_templates',
+      'read:email_templates',
+      'update:email_templates',
+      'create:email_provider',
+      'read:email_provider',
+      'update:email_provider'
+    ].join(' ')
   }));
 
   // Configure routes.

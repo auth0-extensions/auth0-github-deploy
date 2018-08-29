@@ -2,10 +2,8 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import request from 'superagent';
 
-import logger from './logger';
 
-
-const createPayload = (progress, extensionUrl) => {
+const createPayload = (report, extensionUrl) => {
   const msg = {
     username: 'auth0-deployments',
     icon_emoji: ':rocket:',
@@ -16,30 +14,30 @@ const createPayload = (progress, extensionUrl) => {
     fallback: 'Github to Auth0 Deployment',
     text: 'Github to Auth0 Deployment',
     fields: [
-      { title: 'Repository', value: progress.repository, short: true },
-      { title: 'Branch', value: progress.branch, short: true },
-      { title: 'ID', value: progress.id, short: true },
-      { title: 'Commit', value: progress.sha, short: true }
+      { title: 'Repository', value: report.repository, short: true },
+      { title: 'Branch', value: report.branch, short: true },
+      { title: 'ID', value: report.id, short: true },
+      { title: 'Commit', value: report.sha, short: true }
     ],
-    error_field: { title: 'Error', value: progress.error || null, short: false }
+    error_field: { title: 'Error', value: report.error || null, short: false }
   };
 
   const details = `(<${extensionUrl}|Details>)`;
 
   const fields = template.fields;
 
-  if (progress.error) {
+  if (report.error) {
     fields.push(template.error_field);
 
     msg.attachments.push({
       color: '#F35A00',
-      fallback: `${template.fallback} failed: ${progress.error.message}`,
+      fallback: `${template.fallback} failed: ${report.error.message}`,
       text: `${template.text} failed: ${details}`,
       fields: template.fields
     });
   } else {
-    if (progress.logs) {
-      _.forEach(progress.logs, (item, name) => {
+    if (report.logs) {
+      _.forEach(report.logs, (item, name) => {
         _.forEach(item, (count, type) => {
           if (count) {
             fields.push({ title: `${name} ${type}`, value: count, short: true });
@@ -59,26 +57,20 @@ const createPayload = (progress, extensionUrl) => {
   return msg;
 };
 
-export default function(progress, extensionUrl, hook) {
+export default function (report, extensionUrl, hook) {
   if (!hook) {
     return Promise.resolve();
   }
 
-  logger.log('Sending progress to Slack.');
-
-  const msg = createPayload(progress, extensionUrl);
-  return new Promise((resolve) => {
+  const msg = createPayload(report, extensionUrl);
+  return new Promise((resolve, reject) => {
     request
       .post(hook)
       .send(msg)
       .set('Accept', 'application/json')
-      .end((err, res) => {
-        if (err && err.status === 401) {
-          logger.log(`Error sending to Slack: ${err.status}`);
-        } else if (err && res && res.body) {
-          logger.log(`Error sending to Slack: ${err.status} - ${res.body}`);
-        } else if (err) {
-          logger.log(`Error sending to Slack: ${err.status} - ${err.message}`);
+      .end((err) => {
+        if (err) {
+          return reject(err);
         }
 
         return resolve();
