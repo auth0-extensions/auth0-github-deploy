@@ -9,13 +9,14 @@ export default (storage) => {
         storage.read()
           .then(data => {
             const result = {};
+            const filtered = _.filter(resourceServers, server => !server.is_system);
 
             if (data && data.excluded_resource_servers) {
-              _.forEach(resourceServers, (server) => {
+              _.forEach(filtered, (server) => {
                 result[server.name] = (data.excluded_resource_servers.indexOf(server.name) >= 0);
               });
             } else {
-              _.forEach(resourceServers, (server) => {
+              _.forEach(filtered, (server) => {
                 result[server.name] = false;
               });
             }
