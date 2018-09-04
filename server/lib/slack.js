@@ -31,7 +31,7 @@ const createPayload = (report, extensionUrl) => {
 
     msg.attachments.push({
       color: '#F35A00',
-      fallback: `${template.fallback} failed: ${report.error.message}`,
+      fallback: `${template.fallback} failed: ${report.error.message || report.error}`,
       text: `${template.text} failed: ${details}`,
       fields: template.fields
     });
