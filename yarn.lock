@@ -6,6 +6,10 @@ Base64@~0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/Base64/-/Base64-0.2.1.tgz#ba3a4230708e186705065e66babdd4c35cf60028"
 
+a0-tunnel@auth0/a0-tunnel:
+  version "1.0.0"
+  resolved "https://codeload.github.com/auth0/a0-tunnel/tar.gz/eed69479dc5a976211b9b9c33dd22fb0ae8d6295"
+
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"

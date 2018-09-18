@@ -1,9 +1,9 @@
 {
   "name": "auth0-github-deploy-extension",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "description": "Auth0 GitHub Deployment Extension",
   "engines": {
-    "node": "5.9.0"
+    "node": ">6"
   },
   "main": "server.js",
   "scripts": {
@@ -81,6 +81,7 @@
     "winston": "^2.2.0"
   },
   "devDependencies": {
+    "a0-tunnel": "auth0/a0-tunnel",
     "autoprefixer": "6.7.7",
     "babel-eslint": "7.2.1",
     "babel-loader": "6.4.1",

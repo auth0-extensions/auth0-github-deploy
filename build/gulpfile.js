@@ -4,11 +4,14 @@ const open = require('open');
 const ngrok = require('ngrok');
 const util = require('gulp-util');
 const nodemon = require('gulp-nodemon');
+const a0Tunnel = require('a0-tunnel');
 
+const tunnel = process.env.A0_TUNNEL_REMOTE_HOST ? a0Tunnel : ngrok;
+console.log('host:', process.env.A0_TUNNEL_REMOTE_HOST, process.env.A0_TUNNEL_REMOTE_PORT);
 gulp.task('run', () => {
-  ngrok.connect(3000, (ngrokError, url) => {
-    if (ngrokError) {
-      throw ngrokError;
+  tunnel.connect(3000, (err, url) => {
+    if (err) {
+      throw err;
     }
 
     nodemon({
