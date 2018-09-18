@@ -6,6 +6,7 @@
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Pages, Rules and Custom Database Connections from GitHub.",
   "type": "application",
+  "category": "source_control",
   "docsUrl": "https://auth0.com/docs/extensions/github-deploy",
   "logoUrl": "https://cdn.auth0.com/extensions/auth0-github-deploy/assets/logo.svg",
   "initialUrlPath": "/login",
