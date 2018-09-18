@@ -1,7 +1,8 @@
 {
   "title": "GitHub Deployments",
   "name": "auth0-github-deploy",
-  "version": "2.3.4",
+  "version": "2.3.5",
+  "preVersion": "2.3.4",
   "author": "auth0",
   "description": "This extension gives Auth0 customers the possibility to deploy Pages, Rules and Custom Database Connections from GitHub.",
   "type": "application",
@@ -18,7 +19,7 @@
   "auth0": {
     "createClient": true,
     "onUninstallPath": "/.extensions/on-uninstall",
-    "scopes": "read:tenant_settings update:tenant_settings create:clients read:clients update:clients read:connections update:connections read:rules create:rules update:rules delete:rules delete:clients read:resource_servers create:resource_servers update:resource_servers read:rules_configs delete:rules_configs update:rules_configs"
+    "scopes": "read:tenant_settings update:tenant_settings create:clients read:clients update:clients read:client_grants create:client_grants update:client_grants read:connections update:connections read:rules create:rules update:rules delete:rules delete:clients read:resource_servers create:resource_servers update:resource_servers read:rules_configs delete:rules_configs update:rules_configs"
   },
   "secrets": {
     "GITHUB_REPOSITORY": {
