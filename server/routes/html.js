@@ -21,7 +21,7 @@ export default () => {
     <link rel="stylesheet" type="text/css" href="https://cdn.auth0.com/manage/v0.3.1715/css/index.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.auth0.com/styleguide/4.6.13/index.css">
     <% if (assets.style) { %><link rel="stylesheet" type="text/css" href="/app/<%= assets.style %>"><% } %>
-    <% if (assets.version) { %><link rel="stylesheet" type="text/css" href="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.<%= assets.version %>.css"><% } %>
+    <% if (assets.version) { %><link rel="stylesheet" type="text/css" href="<%= assets.cdnPath %>/auth0-github-deploy.ui.<%= assets.version %>.css"><% } %>
   </head>
   <body class="a0-extension">
     <div id="app"></div>
@@ -31,8 +31,8 @@ export default () => {
     <% if (assets.vendors) { %><script type="text/javascript" src="/app/<%= assets.vendors %>"></script><% } %>
     <% if (assets.app) { %><script type="text/javascript" src="//localhost:3000/app/<%= assets.app %>"></script><% } %>
     <% if (assets.version) { %>
-    <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.vendors.<%= assets.version %>.js"></script>
-    <script type="text/javascript" src="//cdn.auth0.com/extensions/auth0-github-deploy/assets/auth0-github-deploy.ui.<%= assets.version %>.js"></script>
+    <script type="text/javascript" src="<%= assets.cdnPath %>/auth0-github-deploy.ui.vendors.<%= assets.version %>.js"></script>
+    <script type="text/javascript" src="<%= assets.cdnPath %>/auth0-github-deploy.ui.<%= assets.version %>.js"></script>
     <% } %>
   </body>
   </html>
@@ -48,10 +48,17 @@ export default () => {
 
     // Render from CDN.
     const clientVersion = process.env.CLIENT_VERSION;
+    const PR_NUMBER = process.env.PR_NUMBER;
     if (clientVersion) {
+      const cdnPath = config('CDN_PATH') || (
+        PR_NUMBER
+          ? `//s3.amazonaws.com/extensions-review/auth0-github-deploy-pr-${PR_NUMBER}/assets`
+          : '//cdn.auth0.com/extensions/auth0-github-deploy/assets'
+      );
       return res.send(ejs.render(template, {
         config: settings,
-        assets: { version: clientVersion }
+        assets: { version: clientVersion },
+        cdnPath: cdnPath
       }));
     }
 

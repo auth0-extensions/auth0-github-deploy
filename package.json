@@ -11,7 +11,7 @@
     "clean": "rimraf dist",
     "client:build": "npm run clean && cross-env NODE_ENV=production webpack --config ./build/webpack/config.prod.js --colors -p",
     "extension:build": "cross-env NODE_ENV=production webpack -p --config ./build/extension/webpack.config.js",
-    "extension:bundle": "cp ./dist/auth0-github-deploy.extension.$npm_package_version.js ./build/bundle.js",
+    "extension:bundle": "cp ./dist/auth0-github-deploy.extension.$npm_package_version.js ./dist/bundle.js && cp ./webtask.json ./dist/webtask.json",
     "extension:size": "cross-env NODE_ENV=production webpack -p --config ./build/extension/webpack.config.js --json > ./build/extension/bundle-size.json && node ./build/extension/bundle-size.js",
     "lint:js": "eslint --ignore-path .gitignore --ignore-pattern build --ignore-pattern webpack .",
     "serve:dev": "cross-env NODE_ENV=development gulp run --gulpfile ./build/gulpfile.js",
@@ -20,7 +20,7 @@
     "test:clean": "rimraf ./coverage && rimraf ./.nyc_output",
     "test:pre": "npm run test:clean",
     "test:watch": "npm run test:pre && cross-env NODE_ENV=test mocha tests/mocha.js ./tests/**/*.tests.js --watch",
-    "test": "npm run test:pre && cross-env NODE_ENV=test nyc mocha tests/mocha.js ./tests/**/*.tests.js",
+    "test": "npm run test:pre && cross-env NODE_ENV=test nyc --reporter=lcov mocha tests/mocha.js ./tests/**/*.tests.js",
     "win-build": "cross-env NODE_ENV=production && npm run clean && npm run client:build && npm run extension:build && npm run win-extension:bundle",
     "win-extension:bundle": "copy dist\\auth0-github-deploy.extension.%npm_package_version%.js build\\bundle.js /y"
   },
