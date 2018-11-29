@@ -5,7 +5,7 @@ import { logout } from '../actions/auth';
 import Header from '../components/Header';
 
 import RequireAuthentication from './RequireAuthentication';
-import { ConfigContainer, DeploymentsContainer, RulesContainer } from './';
+import { ConfigContainer, DeploymentsContainer, RulesContainer, ResourceServersContainer } from './';
 
 class App extends Component {
   render() {
@@ -52,6 +52,13 @@ class App extends Component {
                         </span>
                       </a>
                     </li>
+                    <li className={activeTab === 'resourceServers' ? 'active' : ''}>
+                      <a data-toggle="tab" href="#resourceServers">
+                        <span className="tab-title">
+                          Resource Servers Configuration
+                        </span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
                 <div id="content-area" className="tab-content">
@@ -63,6 +70,9 @@ class App extends Component {
                   </div>
                   <div id="rules" className={activeTab === 'rules' ? 'tab-pane active' : 'tab-pane'}>
                     <RulesContainer />
+                  </div>
+                  <div id="resourceServers" className={activeTab === 'resourceServers' ? 'tab-pane active' : 'tab-pane'}>
+                    <ResourceServersContainer />
                   </div>
                 </div>
               </div>

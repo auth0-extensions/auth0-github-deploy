@@ -2,37 +2,37 @@ import React, { PropTypes, Component } from 'react';
 import connectContainer from 'redux-static';
 import { Error, LoadingPanel } from 'auth0-extension-ui';
 
-import { ruleActions } from '../actions';
+import { resourceServerActions } from '../actions';
 
 import ConfigurationTable from '../components/ConfigurationTable';
 
 export default connectContainer(class extends Component {
   static stateToProps = (state) => ({
-    rules: state.rules.get('records'),
-    loading: state.rules.get('loading'),
-    error: state.rules.get('error'),
-    showNotification: state.rules.get('showNotification'),
-    notificationType: state.rules.get('notificationType')
+    resourceServers: state.resourceServers.get('records'),
+    loading: state.resourceServers.get('loading'),
+    error: state.resourceServers.get('error'),
+    showNotification: state.resourceServers.get('showNotification'),
+    notificationType: state.resourceServers.get('notificationType')
   });
 
   static actionsToProps = {
-    ...ruleActions
+    ...resourceServerActions
   }
 
   static propTypes = {
-    rules: PropTypes.object.isRequired,
+    resourceServers: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     error: PropTypes.object.isRequired,
-    fetchAllRules: PropTypes.func.isRequired,
-    updateRules: PropTypes.func.isRequired
+    fetchAllResourceServers: PropTypes.func.isRequired,
+    updateResourceServers: PropTypes.func.isRequired
   }
 
   componentWillMount() {
-    this.props.fetchAllRules();
+    this.props.fetchAllResourceServers();
   }
 
   render() {
-    const rules = this.props.rules;
+    const resourceServers = this.props.resourceServers;
     const loading = this.props.loading;
     const error = this.props.error;
     return (
@@ -42,11 +42,11 @@ export default connectContainer(class extends Component {
             <div className="col-xs-12">
               <Error message={error} />
               <ConfigurationTable
-                type="Rules"
-                items={rules}
+                type="Resource Servers"
+                items={resourceServers}
                 loading={loading}
                 error={error}
-                saveManualItems={this.props.updateRules}
+                saveManualItems={this.props.updateResourceServers}
                 openNotification={this.props.openNotification}
                 closeNotification={this.props.closeNotification}
                 showNotification={this.props.showNotification}
