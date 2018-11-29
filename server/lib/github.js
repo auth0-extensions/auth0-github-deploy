@@ -3,34 +3,48 @@ import path from 'path';
 import Promise from 'bluebird';
 import GitHubApi from 'github';
 import request from 'request-promise';
-import { constants, unifyDatabases, unifyScripts } from 'auth0-source-control-extension-tools';
+import { constants } from 'auth0-source-control-extension-tools';
 
 import config from './config';
-import logger from '../lib/logger';
+import logger from './logger';
+
+const getBaseDir = () => {
+  let baseDir = config('BASE_DIR') || '';
+  if (baseDir.startsWith('/')) baseDir = baseDir.slice(1);
+  if (baseDir !== '' && !baseDir.endsWith('/')) baseDir += '/';
+
+  return baseDir;
+};
 
 /*
  * Check if a file is part of the rules folder.
  */
 const isRule = (file) =>
-file.indexOf(`${constants.RULES_DIRECTORY}/`) === 0;
+  file.indexOf(`${getBaseDir()}${constants.RULES_DIRECTORY}/`) === 0;
 
 /*
  * Check if a file is part of the database folder.
  */
 const isDatabaseConnection = (file) =>
-  file.indexOf(`${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
+  file.indexOf(`${getBaseDir()}${constants.DATABASE_CONNECTIONS_DIRECTORY}/`) === 0;
 
 /*
- * Check if a file is part of the pages folder.
+ * Check if a file is part of the templates folder - emails or pages.
  */
-const isPage = (file) =>
-  file.indexOf(`${constants.PAGES_DIRECTORY}/`) === 0 && constants.PAGE_NAMES.indexOf(file.split('/').pop()) >= 0;
+const isTemplates = (file, dir, allowedNames) =>
+  file.indexOf(`${getBaseDir()}${dir}/`) === 0 && allowedNames.indexOf(file.split('/').pop()) >= 0;
+
+/*
+ * Check if a file is email provider.
+ */
+const isEmailProvider = (file) =>
+  file === `${getBaseDir()}${constants.EMAIL_TEMPLATES_DIRECTORY}/provider.json`;
 
 /*
  * Check if a file is part of configurable folder.
  */
 const isConfigurable = (file, directory) =>
-  file.indexOf(`${directory}/`) === 0;
+  file.indexOf(`${getBaseDir()}${directory}/`) === 0;
 
 /*
  * Get the details of a database file script.
@@ -54,11 +68,19 @@ const getDatabaseScriptDetails = (filename) => {
  * Only Javascript and JSON files.
  */
 const validFilesOnly = (fileName) => {
-  if (isPage(fileName)) {
+  if (isTemplates(fileName, constants.PAGES_DIRECTORY, constants.PAGE_NAMES)) {
+    return true;
+  } else if (isTemplates(fileName, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES)) {
+    return true;
+  } else if (isEmailProvider(fileName)) {
     return true;
   } else if (isRule(fileName)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isConfigurable(fileName, constants.CLIENTS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.CLIENTS_GRANTS_DIRECTORY)) {
+    return /\.(js|json)$/i.test(fileName);
+  } else if (isConfigurable(fileName, constants.CONNECTIONS_DIRECTORY)) {
     return /\.(js|json)$/i.test(fileName);
   } else if (isConfigurable(fileName, constants.RESOURCE_SERVERS_DIRECTORY)) {
     return /\.(js|json)$/i.test(fileName);
@@ -99,15 +121,113 @@ const parseRepo = (repository = '') => {
   throw new Error(`Invalid repository: ${repository}`);
 };
 
+const unifyItem = (item, type) => {
+  switch (type) {
+    default:
+    case 'rules': {
+      let meta = item.metadataFile || {};
+      try {
+        meta = JSON.parse(item.metadataFile);
+      } catch (e) {
+        logger.info(`Cannot parse metadata of ${item.name} ${type}`);
+      }
+      const { order = 0, enabled, stage = 'login_success' } = meta;
+      return ({ script: item.scriptFile, name: item.name, order, stage, enabled });
+    }
+    case 'pages': {
+      let meta = item.metadataFile || {};
+      try {
+        meta = JSON.parse(item.metadataFile);
+      } catch (e) {
+        logger.info(`Cannot parse metadata of ${item.name} ${type}`);
+      }
+      const { enabled } = meta;
+      return ({ html: item.htmlFile, name: item.name, enabled });
+    }
+    case 'emailTemplates': {
+      if (item.name === 'provider') return null;
+
+      let meta = item.metadataFile || {};
+      try {
+        meta = JSON.parse(item.metadataFile);
+      } catch (e) {
+        logger.info(`Cannot parse metadata of ${item.name} ${type}`);
+      }
+
+      return ({ ...meta, body: item.htmlFile });
+    }
+    case 'clientGrants':
+    case 'emailProvider': {
+      let data = item.configFile || {};
+      try {
+        data = JSON.parse(item.configFile);
+      } catch (e) {
+        logger.info(`Cannot parse metadata of ${item.name} ${type}`);
+      }
+
+      return ({ ...data });
+    }
+    case 'databases': {
+      const customScripts = {};
+      _.forEach(item.scripts, (script) => { customScripts[script.name] = script.scriptFile; });
+      return ({ strategy: 'auth0', name: item.name, options: { customScripts, enabledDatabaseCustomization: true } });
+    }
+    case 'resourceServers':
+    case 'connections':
+    case 'clients': {
+      let meta = item.metadataFile || {};
+      let data = item.configFile || {};
+      try {
+        data = JSON.parse(item.configFile);
+      } catch (e) {
+        logger.info(`Cannot parse config of ${item.name} ${type}`);
+      }
+      try {
+        meta = JSON.parse(item.metadataFile);
+      } catch (e) {
+        logger.info(`Cannot parse metadata of ${item.name} ${type}`);
+      }
+
+      return ({ name: item.name, ...meta, ...data });
+    }
+    case 'rulesConfigs': {
+      let data = item.configFile || {};
+      try {
+        data = JSON.parse(item.configFile);
+      } catch (e) {
+        logger.info(`Cannot parse config of ${item.name} ${type}`);
+      }
+      return ({ key: item.name, value: data.value });
+    }
+  }
+};
+
+const unifyData = (assets) => {
+  const result = {};
+  _.forEach(assets, (data, type) => {
+    result[type] = [];
+    if (Array.isArray(data)) {
+      _.forEach(data, (item) => {
+        const unified = unifyItem(item, type);
+        if (unified) result[type].push(unified);
+      });
+    } else {
+      result[type] = unifyItem(data, type);
+    }
+  });
+
+  return result;
+};
+
 /*
  * Get tree.
  */
 const getTree = (repository, branch, sha) =>
   new Promise((resolve, reject) => {
     try {
-      console.log('Repository: ', repository);
-      console.log('Branch: ', branch);
-      console.log('Sha: ', sha);
+      logger.log('Repository: ', repository);
+      logger.log('Branch: ', branch);
+      logger.log('Sha: ', sha);
 
       const host = config('GITHUB_HOST') || 'api.github.com';
       const pathPrefix = host !== 'api.github.com' ? config('GITHUB_API_PATH') || '/api/v3' : '';
@@ -138,7 +258,7 @@ const getTree = (repository, branch, sha) =>
           }
         });
     } catch (e) {
-      console.log(e);
+      logger.error(e);
       reject(e);
     }
   });
@@ -277,24 +397,24 @@ const getDatabaseScripts = (repository, branch, files) => {
 };
 
 /*
- * Download a single page script.
+ * Download a single page or email script.
  */
-const downloadPage = (repository, branch, pageName, page, shaToken) => {
+const downloadTemplate = (repository, branch, tplName, template, shaToken) => {
   const downloads = [];
   const currentPage = {
     metadata: false,
-    name: pageName
+    name: tplName
   };
 
-  if (page.file) {
-    downloads.push(downloadFile(repository, branch, page.file, shaToken)
+  if (template.file) {
+    downloads.push(downloadFile(repository, branch, template.file, shaToken)
       .then(file => {
         currentPage.htmlFile = file.contents;
       }));
   }
 
-  if (page.meta_file) {
-    downloads.push(downloadFile(repository, branch, page.meta_file, shaToken)
+  if (template.meta_file) {
+    downloads.push(downloadFile(repository, branch, template.meta_file, shaToken)
       .then(file => {
         currentPage.metadata = true;
         currentPage.metadataFile = file.contents;
@@ -333,31 +453,38 @@ const downloadConfigurable = (repository, branch, itemName, item) => {
 };
 
 /*
- * Get all pages.
+ * Get all html templates - emails/pages.
  */
-const getPages = (repository, branch, files, shaToken) => {
-  const pages = {};
+const getHtmlTemplates = (repository, branch, files, dir, allowedNames) => {
+  const templates = {};
 
   // Determine if we have the script, the metadata or both.
-  _.filter(files, f => isPage(f.path)).forEach(file => {
-    const pageName = path.parse(file.path).name;
+  _.filter(files, f => isTemplates(f.path, dir, allowedNames)).forEach(file => {
+    const tplName = path.parse(file.path).name;
     const ext = path.parse(file.path).ext;
-    pages[pageName] = pages[pageName] || {};
+    templates[tplName] = templates[tplName] || {};
 
     if (ext !== '.json') {
-      pages[pageName].file = file;
-      pages[pageName].sha = file.sha;
-      pages[pageName].path = file.path;
+      templates[tplName].file = file;
+      templates[tplName].sha = file.sha;
+      templates[tplName].path = file.path;
     } else {
-      pages[pageName].meta_file = file;
-      pages[pageName].meta_sha = file.sha;
-      pages[pageName].meta_path = file.path;
+      templates[tplName].meta_file = file;
+      templates[tplName].meta_sha = file.sha;
+      templates[tplName].meta_path = file.path;
     }
   });
 
-  return Promise.map(Object.keys(pages), (pageName) =>
-    downloadPage(repository, branch, pageName, pages[pageName], shaToken), { concurrency: 2 });
+  return Promise.map(Object.keys(templates), (tplName) =>
+    downloadTemplate(repository, branch, tplName, templates[tplName]), { concurrency: 2 });
 };
+
+
+/*
+ * Get email provider.
+ */
+const getEmailProvider = (repository, branch, files) =>
+  downloadConfigurable(repository, branch, 'emailProvider', { configFile: _.find(files, f => isEmailProvider(f.path)) });
 
 /*
  * Get all configurables (resource servers / clients).
@@ -408,20 +535,17 @@ export const getChanges = (repository, branch, sha) =>
 
       const promises = {
         rules: getRules(repository, branch, files),
-        pages: getPages(repository, branch, files),
-        clients: getConfigurables(repository, branch, files, constants.CLIENTS_DIRECTORY),
         databases: getDatabaseScripts(repository, branch, files),
-        ruleConfigs: getConfigurables(repository, branch, files, constants.RULES_CONFIGS_DIRECTORY),
+        emailProvider: getEmailProvider(repository, branch, files),
+        emailTemplates: getHtmlTemplates(repository, branch, files, constants.EMAIL_TEMPLATES_DIRECTORY, constants.EMAIL_TEMPLATES_NAMES),
+        pages: getHtmlTemplates(repository, branch, files, constants.PAGES_DIRECTORY, constants.PAGE_NAMES),
+        clients: getConfigurables(repository, branch, files, constants.CLIENTS_DIRECTORY),
+        clientGrants: getConfigurables(repository, branch, files, constants.CLIENTS_GRANTS_DIRECTORY),
+        connections: getConfigurables(repository, branch, files, constants.CONNECTIONS_DIRECTORY),
+        rulesConfigs: getConfigurables(repository, branch, files, constants.RULES_CONFIGS_DIRECTORY),
         resourceServers: getConfigurables(repository, branch, files, constants.RESOURCE_SERVERS_DIRECTORY)
       };
 
       return Promise.props(promises)
-        .then((result) => ({
-          rules: unifyScripts(result.rules),
-          databases: unifyDatabases(result.databases),
-          pages: unifyScripts(result.pages),
-          clients: unifyScripts(result.clients),
-          ruleConfigs: unifyScripts(result.ruleConfigs),
-          resourceServers: unifyScripts(result.resourceServers)
-        }));
+        .then((result) => unifyData(result));
     });
