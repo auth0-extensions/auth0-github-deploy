@@ -57,8 +57,10 @@ export default () => {
       );
       return res.send(ejs.render(template, {
         config: settings,
-        assets: { version: clientVersion },
-        cdnPath: cdnPath
+        assets: {
+          version: clientVersion,
+          cdnPath: cdnPath
+        }
       }));
     }
 
