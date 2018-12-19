@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.5.0] - 2018-12-18
 
 ### Fixed
-- Options reset on `databases` update issue.
+- Options reset on `databases` update issue. #55
+- Database Scripts under non root `BASE_DIR`. #54
 
 ## [2.4.0] - 2018-11-29
 
